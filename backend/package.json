@@ -1,0 +1,11 @@
+{
+  "name": "tm_writers_backend",
+  "version": "1.0.0",
+  "main": "server.ts",
+  "repository": "https://github.com/Emekarr/tm-writers.git",
+  "author": "Chiemekam Anyawnwu-Ebere",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
