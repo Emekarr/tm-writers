@@ -1,6 +1,10 @@
 import express, { Application, Response, Request } from 'express';
 
+// utils
 import ServerResponse from './utils/response';
+
+// middleware
+import error_middleware from './middleware/error_middleware';
 
 class App {
 	private express: Application;
@@ -21,6 +25,8 @@ class App {
 				.statusCode(404)
 				.respond(res);
 		});
+
+		this.express.use(error_middleware);
 	}
 
 	listen(port: string, cb: () => void) {
