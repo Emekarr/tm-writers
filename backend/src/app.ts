@@ -8,6 +8,9 @@ class App {
 	constructor() {
 		this.express = express();
 
+		this.express.use(express.json());
+		this.express.use(express.urlencoded({ extended: true }));
+
 		this.express.use('/howfar', (req: Request, res: Response) => {
 			new ServerResponse('i dey boss').respond(res);
 		});
