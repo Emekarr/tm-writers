@@ -6,6 +6,9 @@ import ServerResponse from './utils/response';
 // middleware
 import error_middleware from './middleware/error_middleware';
 
+// routes
+import router from './routes';
+
 class App {
 	private express: Application;
 
@@ -14,6 +17,8 @@ class App {
 
 		this.express.use(express.json());
 		this.express.use(express.urlencoded({ extended: true }));
+
+		this.express.use('/api', router);
 
 		this.express.use('/howfar', (req: Request, res: Response) => {
 			new ServerResponse('i dey boss').respond(res);
