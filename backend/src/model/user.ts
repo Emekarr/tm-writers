@@ -13,7 +13,7 @@ interface User {
 
 interface IUser extends User {
 	profile_image?: Buffer;
-	verified_phone: boolean;
+	verified_email: boolean;
 	recovery_otp: number;
 }
 
@@ -60,7 +60,7 @@ const user_schema_field: Record<keyof IUser, any> = {
 		type: Buffer,
 		default: null,
 	},
-	verified_phone: {
+	verified_email: {
 		type: Boolean,
 		default: false,
 	},
