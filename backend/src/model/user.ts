@@ -7,7 +7,7 @@ interface User {
 	username: string;
 	firstname: string;
 	lastname: string;
-	mobile: string;
+	email: string;
 	password?: string;
 }
 
@@ -44,13 +44,17 @@ const user_schema_field: Record<keyof IUser, any> = {
 		minlength: 2,
 		trim: true,
 	},
-	mobile: {
+	email: {
 		type: String,
 		required: true,
-		maxlength: 11,
-		minlength: 11,
+		maxlength: 100,
 		trim: true,
 		unique: true,
+		validate(data: string) {
+			const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			if (!regex.test(data))
+				throw new CustomError('invalid email provided', 400);
+		},
 	},
 	profile_image: {
 		type: Buffer,
