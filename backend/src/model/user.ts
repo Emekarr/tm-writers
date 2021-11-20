@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 
 import CustomError from '../utils/error';
 
-interface User {
+export interface User {
 	username: string;
 	firstname: string;
 	lastname: string;
@@ -17,7 +17,7 @@ interface IUser extends User {
 	recovery_otp: number;
 }
 
-interface IUserDocument extends IUser, Document {
+export interface IUserDocument extends IUser, Document {
 	generateTokens: () => string;
 }
 

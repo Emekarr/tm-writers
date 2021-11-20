@@ -9,6 +9,9 @@ import error_middleware from './middleware/error_middleware';
 // routes
 import router from './routes';
 
+// models
+import('./model/connect');
+
 class App {
 	private express: Application;
 
