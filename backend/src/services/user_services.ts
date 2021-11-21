@@ -1,11 +1,17 @@
 import UserModel, { User, IUserDocument } from '../model/user';
 
-const create_user_service = async (data: User): Promise<IUserDocument> => {
-	const new_user = new UserModel(data);
-	const user = await new_user.save();
-	return user;
-};
+class UserService {
+	async create_user(data: User): Promise<IUserDocument> {
+		let user!: IUserDocument;
+		try {
+			const new_user = new UserModel(data);
+			user = await new_user.save();
+		} catch (err) {
+			console.log(err);
+		}
 
-export default {
-	create_user_service,
-};
+		return user;
+	}
+}
+
+export default new UserService();
