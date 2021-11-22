@@ -13,7 +13,6 @@ class UserService {
 	}
 
 	async findById(id: string): Promise<IUserDocument | null> {
-		console.log(id)
 		let user!: IUserDocument | null;
 		try {
 			user = await UserModel.findById(id);

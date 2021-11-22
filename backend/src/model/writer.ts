@@ -5,7 +5,7 @@ import CustomError from '../utils/error';
 import countries from '../utils/countries';
 import qualification from '../utils/qualifications';
 
-interface Writer {
+export interface Writer {
 	username: string;
 	firstname: string;
 	lastname: string;
@@ -22,14 +22,14 @@ interface Writer {
 	weakness: string[];
 }
 
-interface IWriter extends Writer {
+export interface IWriter extends Writer {
 	profile_image?: Buffer;
 	verified_email: boolean;
 	verified_mobile: boolean;
 	recovery_otp: number;
 }
 
-interface IWriterDocument extends IWriter, Document {
+export interface IWriterDocument extends IWriter, Document {
 	generateTokens: () => string;
 }
 
