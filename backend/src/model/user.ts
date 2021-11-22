@@ -4,17 +4,17 @@ import bcrypt from 'bcrypt';
 import CustomError from '../utils/error';
 
 export interface User {
-	username: string;
-	firstname: string;
-	lastname: string;
-	email: string;
+	username?: string;
+	firstname?: string;
+	lastname?: string;
+	email?: string;
 	password?: string;
 }
 
-interface IUser extends User {
+export interface IUser extends User {
 	profile_image?: Buffer;
-	verified_email: boolean;
-	recovery_otp: number;
+	verified_email?: boolean;
+	recovery_otp?: number;
 }
 
 export interface IUserDocument extends IUser, Document {
