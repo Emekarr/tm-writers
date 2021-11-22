@@ -27,6 +27,7 @@ export interface IWriter extends Writer {
 	verified_email: boolean;
 	verified_mobile: boolean;
 	recovery_otp: number;
+	approved_writer: boolean;
 }
 
 export interface IWriterDocument extends IWriter, Document {
@@ -93,6 +94,10 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 		minlength: 9,
 		trim: true,
 		unique: true,
+	},
+	approved_writer: {
+		type: Boolean,
+		default: false,
 	},
 	address: {
 		type: String,
