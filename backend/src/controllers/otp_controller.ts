@@ -60,7 +60,7 @@ const verify_otp = async (req: Request, res: Response, next: NextFunction) => {
 		} else if (otp.model === 'writer') {
 			const account = await WriterService.findById(otp.user.toString()!!);
 			if (!account) throw new CustomError('otp validation failed', 400);
-			const updated_account = await UserService.updateUser(account._id!!, {
+			const updated_account = await WriterService.updateUser(account._id!!, {
 				verified_email: false,
 			});
 			if (!updated_account) throw new CustomError('otp validation failed', 400);

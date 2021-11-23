@@ -1,4 +1,4 @@
-import WriterModel, { IWriterDocument, Writer } from '../model/writer';
+import WriterModel, { IWriter, IWriterDocument, Writer } from '../model/writer';
 
 class WriterService {
 	async createWriter(writer_data: Writer): Promise<IWriterDocument | null> {
@@ -19,6 +19,22 @@ class WriterService {
 			writer = null;
 		}
 		return writer;
+	}
+
+	async updateWriter(
+		id: string,
+		user: IWriter,
+	): Promise<IWriterDocument | null> {
+		let updated_writer!: IWriterDocument | null;
+		try {
+			updated_writer = await this.findById(id);
+			if (!updated_writer) throw new Error('No writer returned');
+			updated_writer.update(user);
+			await updated_writer.save();
+		} catch (err) {
+			updated_writer = null;
+		}
+		return updated_writer;
 	}
 }
 
