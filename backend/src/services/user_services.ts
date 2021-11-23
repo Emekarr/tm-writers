@@ -16,7 +16,6 @@ class UserService {
 		let user!: IUserDocument | null;
 		try {
 			user = await UserModel.findById(id);
-			console.log(user)
 		} catch (err) {
 			user = null;
 		}
