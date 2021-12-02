@@ -6,28 +6,28 @@ import countries from '../utils/countries';
 import qualification from '../utils/qualifications';
 
 export interface Writer {
-	username: string;
-	firstname: string;
-	lastname: string;
-	email: string;
+	username?: string;
+	firstname?: string;
+	lastname?: string;
+	email?: string;
 	password?: string;
-	country: string;
-	mobile: string;
-	address: string;
-	nearest_landmark: string;
-	highest_qualificaiton: string;
-	experience: number;
-	academic_work: Buffer;
-	strength: string[];
-	weakness: string[];
+	country?: string;
+	mobile?: string;
+	address?: string;
+	nearest_landmark?: string;
+	highest_qualificaiton?: string;
+	experience?: number;
+	academic_work?: Buffer;
+	strength?: string[];
+	weakness?: string[];
 }
 
 export interface IWriter extends Writer {
 	profile_image?: Buffer;
-	verified_email: boolean;
-	verified_mobile: boolean;
-	recovery_otp: number;
-	approved_writer: boolean;
+	verified_email?: boolean;
+	verified_mobile?: boolean;
+	recovery_otp?: number;
+	approved_writer?: boolean;
 }
 
 export interface IWriterDocument extends IWriter, Document {
@@ -122,7 +122,7 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 	},
 	academic_work: {
 		type: Buffer,
-		required: true,
+		// required: true,
 	},
 	nearest_landmark: {
 		type: String,

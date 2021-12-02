@@ -6,6 +6,7 @@ class WriterService {
 		try {
 			writer = await new WriterModel(writer_data).save();
 		} catch (err) {
+			console.log(err)
 			writer = null;
 		}
 		return writer;
@@ -23,13 +24,13 @@ class WriterService {
 
 	async updateWriter(
 		id: string,
-		user: IWriter,
+		writer: IWriter,
 	): Promise<IWriterDocument | null> {
 		let updated_writer!: IWriterDocument | null;
 		try {
 			updated_writer = await this.findById(id);
 			if (!updated_writer) throw new Error('No writer returned');
-			updated_writer.update(user);
+			updated_writer.update(writer);
 			await updated_writer.save();
 		} catch (err) {
 			updated_writer = null;
