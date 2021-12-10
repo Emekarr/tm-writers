@@ -6,6 +6,7 @@ class QueryService {
 			throw new CustomError('Please pass in the required data', 400);
 		}
 	}
+
 }
 
 export default new QueryService();

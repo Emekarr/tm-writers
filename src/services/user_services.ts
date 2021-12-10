@@ -4,8 +4,7 @@ class UserService {
 	async createUser(data: User): Promise<IUserDocument | null> {
 		let user!: IUserDocument | null;
 		try {
-			const new_user = new UserModel(data);
-			user = await new_user.save();
+			user = await new UserModel(data).save();
 		} catch (err) {
 			user = null;
 		}
@@ -16,6 +15,26 @@ class UserService {
 		let user!: IUserDocument | null;
 		try {
 			user = await UserModel.findById(id);
+		} catch (err) {
+			user = null;
+		}
+		return user;
+	}
+
+	async findByUsername(username: string): Promise<IUserDocument | null> {
+		let user!: IUserDocument | null;
+		try {
+			user = await UserModel.findOne({ username });
+		} catch (err) {
+			user = null;
+		}
+		return user;
+	}
+
+	async findByEmail(email: string): Promise<IUserDocument | null> {
+		let user!: IUserDocument | null;
+		try {
+			user = await UserModel.findOne({ email });
 		} catch (err) {
 			user = null;
 		}

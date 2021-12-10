@@ -1,15 +1,21 @@
+/* eslint-disable no-console */
 import sgMail, { MailDataRequired } from '@sendgrid/mail';
+
 sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 class MessagingService {
-	sendEmail(email: string, message: string): Promise<{ success: boolean }> {
+	sendEmail(
+		email: string,
+		text: string,
+		subject: string,
+	): Promise<{ success: boolean }> {
 		return new Promise((resolve, reject) => {
 			try {
 				const msg: MailDataRequired = {
 					to: email,
-					from: process.env.TDM_EMAIL as string,
-					subject: 'TDM WRITERS account verification.',
-					text: `DO NOT SHARE THIS MESSAGE WITH ANYONE\nYour OTP is ${message}`,
+					from: process.env.FRESIBLE_EMAIL as string,
+					subject,
+					text,
 				};
 
 				try {
@@ -27,13 +33,13 @@ class MessagingService {
 								`ERROR_MESSAGE: ${err.message} \nERROR_NAME: ${err.name}`,
 							);
 							console.log(err);
-							reject({ success: false });
+							reject(Error(err.message));
 						});
-				} catch (err) {
-					reject({ success: false });
+				} catch (err: any) {
+					reject(Error(err.message));
 				}
-			} catch (err) {
-				reject({ success: false });
+			} catch (err: any) {
+				reject(Error(err.message));
 			}
 		});
 	}

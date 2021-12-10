@@ -1,12 +1,11 @@
 import { Router } from 'express';
 
-import otp_controller from '../../controllers/otp_controller';
-const { request_otp, verify_otp } = otp_controller;
+import OtpController from '../../controllers/otp_controller';
 
 const router = Router();
 
-router.post('/request-otp', request_otp);
+router.post('/request-otp', OtpController.requestOtp);
 
-router.patch('/verify-otp', verify_otp);
+router.patch('/verify-otp', OtpController.verifyEmail);
 
 export default router;

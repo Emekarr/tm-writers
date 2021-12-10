@@ -6,7 +6,6 @@ class WriterService {
 		try {
 			writer = await new WriterModel(writer_data).save();
 		} catch (err) {
-			console.log(err)
 			writer = null;
 		}
 		return writer;
@@ -16,6 +15,26 @@ class WriterService {
 		let writer: IWriterDocument | null;
 		try {
 			writer = await WriterModel.findById(id);
+		} catch (err) {
+			writer = null;
+		}
+		return writer;
+	}
+
+	async findByUsername(username: string): Promise<IWriterDocument | null> {
+		let writer!: IWriterDocument | null;
+		try {
+			writer = await WriterModel.findOne({ username });
+		} catch (err) {
+			writer = null;
+		}
+		return writer;
+	}
+
+	async findByEmail(email: string): Promise<IWriterDocument | null> {
+		let writer!: IWriterDocument | null;
+		try {
+			writer = await WriterModel.findOne({ email });
 		} catch (err) {
 			writer = null;
 		}
