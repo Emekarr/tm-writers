@@ -110,6 +110,54 @@ class OtpController {
 			next(err);
 		}
 	}
+
+	async requestPasswordResetOtp(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	) {
+		try {
+			const { email, model } = req.body;
+			QueryService.checkIfNull([email, model]);
+			let account!: IUserDocument | IWriterDocument | null;
+			if (model === 'user') {
+				account = await UserServices.findByEmail(email);
+			} else if (model === 'writer') {
+				account = await WriterService.findByEmail(email);
+			}
+			if (!account)
+				return new ServerResponse(
+					`${email} that email is not registered to an account`,
+				)
+					.success(false)
+					.statusCode(404)
+					.respond(res);
+			const otp = OtpService.generateOtp();
+			const newOtp = await OtpService.saveOtp(otp, account._id);
+			if (!newOtp) return new ServerResponse('failed to create new otp');
+			const isSaved = await RedisService.cacheOtp(newOtp);
+			if (!isSaved) return;
+			if (process.env.NODE_ENV === 'TEST' || process.env.NODE_ENV === 'DEV') {
+				new ServerResponse('otp sent successfully')
+					.data({ otp, user: account._id })
+					.respond(res);
+			} else if (process.env.NODE_ENV === 'PROD') {
+				const { success } = await MessagingService.sendEmail(
+					email as string,
+					`DO NOT SHARE THIS MESSAGE WITH ANYONE\nYour OTP is ${otp}`,
+					'Fresible Wallet Account Verification.',
+				);
+				if (!success) throw new CustomError('Failed to send otp', 400);
+				new ServerResponse('otp sent successfully')
+					.data({ user: account._id })
+					.respond(res);
+			} else {
+				throw new CustomError('unknown environment running', 500);
+			}
+		} catch (err) {
+			next(err);
+		}
+	}
 }
 
 export default new OtpController();
