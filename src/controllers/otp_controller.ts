@@ -124,6 +124,8 @@ class OtpController {
 				account = await UserServices.findByEmail(email);
 			} else if (model === 'writer') {
 				account = await WriterService.findByEmail(email);
+			} else {
+				throw new CustomError('unknown model used', 400);
 			}
 			if (!account)
 				return new ServerResponse(
@@ -154,6 +156,54 @@ class OtpController {
 			} else {
 				throw new CustomError('unknown environment running', 500);
 			}
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	async resetPassword(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { otpCode, user, model, password } = req.body;
+			QueryService.checkIfNull([otpCode, model, user, password]);
+			const { match } = await OtpService.verifyOtp(otpCode, user);
+			if (!match)
+				return new ServerResponse('otp validation failed')
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			let account!: IUserDocument | IWriterDocument | null;
+			if (model === 'user') {
+				account = await UserServices.updateUser(user, {
+					password,
+				});
+				if (!account) throw new CustomError('error updating password', 400);
+			} else if (model === 'writer') {
+				account = await WriterService.updateWriter(user, {
+					password,
+				});
+				if (!account) throw new CustomError('error updating password', 400);
+			} else {
+				throw new CustomError('unknown model used', 400);
+			}
+			const { newAccessToken, newRefreshToken } =
+				await TokenService.generateToken(
+					req.socket.remoteAddress!,
+					account._id,
+				);
+			if (!newAccessToken || !newRefreshToken)
+				throw new Error('tokens could not be generated');
+			res.cookie('ACCESS_TOKEN', newAccessToken, {
+				httpOnly: true,
+				maxAge: parseInt(process.env.ACCESS_TOKEN_LIFE as string, 10),
+			});
+			res.cookie('REFRESH_TOKEN', newRefreshToken, {
+				httpOnly: true,
+				maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
+			});
+
+			new ServerResponse('password reset successful')
+				.data({ account })
+				.respond(res);
 		} catch (err) {
 			next(err);
 		}
