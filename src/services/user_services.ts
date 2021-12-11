@@ -1,3 +1,5 @@
+import { compare } from 'bcrypt';
+
 import UserModel, { User, IUserDocument, IUser } from '../model/user';
 
 class UserService {
@@ -52,6 +54,48 @@ class UserService {
 			updated_user = null;
 		}
 		return updated_user;
+	}
+
+	async loginUserWithEmail(email: string, password: string) {
+		let logged_in!: IUserDocument | null;
+		try {
+			const user = await this.findByEmail(email);
+			if (!user) throw new Error('No user returned');
+			logged_in = await this.loginUser(user, password);
+		} catch (err) {
+			logged_in = null;
+		}
+		return logged_in;
+	}
+
+	async loginUserWithUsername(username: string, password: string) {
+		let logged_in!: IUserDocument | null;
+		try {
+			const user = await this.findByUsername(username);
+			if (!user) throw new Error('No user returned');
+			logged_in = await this.loginUser(user, password);
+		} catch (err) {
+			logged_in = null;
+		}
+		return logged_in;
+	}
+
+	private async loginUser(
+		user: IUserDocument,
+		password: string,
+	): Promise<IUserDocument | null> {
+		let logged_in!: IUserDocument | null;
+		try {
+			const correct_password = await compare(password, user.password!);
+			if (correct_password) {
+				logged_in = user;
+			} else {
+				logged_in = null;
+			}
+		} catch (err) {
+			logged_in = null;
+		}
+		return logged_in;
 	}
 }
 

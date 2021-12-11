@@ -4,9 +4,10 @@ import { Request, Response, NextFunction } from 'express';
 import QueryService from '../services/query_service';
 import RedisService from '../services/redis_service';
 import UserServices from '../services/user_services';
+import TokenService from '../services/token_service';
 
 // models
-import { User } from '../model/user';
+import { IUserDocument, User } from '../model/user';
 
 // utils
 import CustomError from '../utils/error';
@@ -48,6 +49,40 @@ class UserController {
 			if (!success)
 				throw new CustomError('something went wrong while saving user', 400);
 			new ServerResponse('User created successfully').respond(res);
+		} catch (err) {
+			next(err);
+		}
+	};
+
+	login = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { account, password } = req.body;
+			QueryService.checkIfNull([account, password]);
+			const email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			let user: IUserDocument | null;
+			if (email_regex.test(account)) {
+				user = await UserServices.loginUserWithEmail(account, password);
+			} else {
+				user = await UserServices.loginUserWithUsername(account, password);
+			}
+			if (!user)
+				return new ServerResponse('Login attempt failed')
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			const { newAccessToken, newRefreshToken } =
+				await TokenService.generateToken(req.socket.remoteAddress!, user!._id);
+			if (!newAccessToken || !newRefreshToken)
+				throw new Error('tokens could not be generated');
+			res.cookie('ACCESS_TOKEN', newAccessToken.token, {
+				httpOnly: true,
+				maxAge: parseInt(process.env.ACCESS_TOKEN_LIFE as string, 10),
+			});
+			res.cookie('REFRESH_TOKEN', newRefreshToken.token, {
+				httpOnly: true,
+				maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
+			});
+			new ServerResponse('Login attepmt successful').data(user).respond(res);
 		} catch (err) {
 			next(err);
 		}
