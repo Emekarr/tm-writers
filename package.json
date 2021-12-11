@@ -17,7 +17,6 @@
 		"@types/mongoose": "^5.11.97",
 		"@types/node": "^16.9.1",
 		"@types/uuid": "^8.3.3",
-		"@vonage/server-sdk": "^2.10.10",
 		"env-cmd": "^10.1.0",
 		"nodemon": "^2.0.12",
 		"rimraf": "^3.0.2",
@@ -25,6 +24,7 @@
 	},
 	"dependencies": {
 		"@sendgrid/mail": "^7.6.0",
+		"@vonage/server-sdk": "^2.10.10",
 		"bcrypt": "^5.0.1",
 		"cookie-parser": "^1.4.5",
 		"express": "^4.17.1",
