@@ -5,7 +5,7 @@ import WriterService from '../services/writer_service';
 import QueryService from '../services/query_service';
 
 // models
-import { IWriter, Writer } from '../model/writer';
+import { IWriter, Writer } from '../db/models/writer';
 
 // utils
 import CustomError from '../utils/error';

@@ -1,60 +1,38 @@
-import WriterModel, { IWriter, IWriterDocument, Writer } from '../model/writer';
+import { IWriter, IWriterDocument, Writer } from '../db/models/writer';
+
+import WriterRepository from '../db/mongodb/writer_repository';
 
 class WriterService {
 	async createWriter(writer_data: Writer): Promise<IWriterDocument | null> {
-		let writer!: IWriterDocument | null;
-		try {
-			writer = await new WriterModel(writer_data).save();
-		} catch (err) {
-			writer = null;
-		}
-		return writer;
+		return (await WriterRepository.createEntry(
+			writer_data,
+		)) as IWriterDocument | null;
 	}
 
 	async findById(id: string): Promise<IWriterDocument | null> {
-		let writer: IWriterDocument | null;
-		try {
-			writer = await WriterModel.findById(id);
-		} catch (err) {
-			writer = null;
-		}
-		return writer;
+		return (await WriterRepository.findById(id)) as IWriterDocument | null;
 	}
 
 	async findByUsername(username: string): Promise<IWriterDocument | null> {
-		let writer!: IWriterDocument | null;
-		try {
-			writer = await WriterModel.findOne({ username });
-		} catch (err) {
-			writer = null;
-		}
-		return writer;
+		return (await WriterRepository.findOneByFields({
+			username,
+		})) as IWriterDocument | null;
 	}
 
 	async findByEmail(email: string): Promise<IWriterDocument | null> {
-		let writer!: IWriterDocument | null;
-		try {
-			writer = await WriterModel.findOne({ email });
-		} catch (err) {
-			writer = null;
-		}
-		return writer;
+		return (await WriterRepository.findOneByFields({
+			email,
+		})) as IWriterDocument | null;
 	}
 
 	async updateWriter(
 		id: string,
 		writer: IWriter,
 	): Promise<IWriterDocument | null> {
-		let updated_writer!: IWriterDocument | null;
-		try {
-			updated_writer = await this.findById(id);
-			if (!updated_writer) throw new Error('No writer returned');
-			updated_writer.update(writer);
-			await updated_writer.save();
-		} catch (err) {
-			updated_writer = null;
-		}
-		return updated_writer;
+		return (await WriterRepository.updateByIdAndReturn(
+			id,
+			writer,
+		)) as IWriterDocument | null;
 	}
 }
 

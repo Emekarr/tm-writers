@@ -9,8 +9,11 @@ import error_middleware from './middleware/error_middleware';
 // routes
 import router from './routes';
 
-// models
-import('./model/connect');
+// connect to databases
+import('./db/mongodb/connect');
+import('./db/redis/connect').then((redisConnection) => {
+	redisConnection.default.connectToRedis();
+});
 
 class App {
 	private express: Application;

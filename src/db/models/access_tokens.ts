@@ -1,7 +1,9 @@
 /* eslint-disable no-useless-constructor */
 import { Types } from 'mongoose';
 
-export default class AccessToken {
+import AccessTokenType from '../interfaces/access_tokens';
+
+export default class AccessToken implements AccessTokenType {
 	constructor(
 		readonly refreshToken: string,
 		readonly token: string,

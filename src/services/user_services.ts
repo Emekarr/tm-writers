@@ -1,59 +1,35 @@
 import { compare } from 'bcrypt';
 
-import UserModel, { User, IUserDocument, IUser } from '../model/user';
+import { User, IUserDocument, IUser } from '../db/models/user';
+
+import UserRepository from '../db/mongodb/user_repository';
 
 class UserService {
 	async createUser(data: User): Promise<IUserDocument | null> {
-		let user!: IUserDocument | null;
-		try {
-			user = await new UserModel(data).save();
-		} catch (err) {
-			user = null;
-		}
-		return user;
+		return (await UserRepository.createEntry(data)) as IUserDocument | null;
 	}
 
 	async findById(id: string): Promise<IUserDocument | null> {
-		let user!: IUserDocument | null;
-		try {
-			user = await UserModel.findById(id);
-		} catch (err) {
-			user = null;
-		}
-		return user;
+		return (await UserRepository.findById(id)) as IUserDocument | null;
 	}
 
 	async findByUsername(username: string): Promise<IUserDocument | null> {
-		let user!: IUserDocument | null;
-		try {
-			user = await UserModel.findOne({ username });
-		} catch (err) {
-			user = null;
-		}
-		return user;
+		return (await UserRepository.findOneByFields({
+			username,
+		})) as IUserDocument | null;
 	}
 
 	async findByEmail(email: string): Promise<IUserDocument | null> {
-		let user!: IUserDocument | null;
-		try {
-			user = await UserModel.findOne({ email });
-		} catch (err) {
-			user = null;
-		}
-		return user;
+		return (await UserRepository.findOneByFields({
+			email,
+		})) as IUserDocument | null;
 	}
 
 	async updateUser(id: string, user: IUser): Promise<IUserDocument | null> {
-		let updated_user!: IUserDocument | null;
-		try {
-			updated_user = await this.findById(id);
-			if (!updated_user) throw new Error('No user returned');
-			updated_user.update(user);
-			await updated_user.save();
-		} catch (err) {
-			updated_user = null;
-		}
-		return updated_user;
+		return (await UserRepository.updateByIdAndReturn(
+			id,
+			user,
+		)) as IUserDocument | null;
 	}
 
 	async loginUserWithEmail(email: string, password: string) {

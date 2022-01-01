@@ -1,10 +1,7 @@
-import { sign } from 'jsonwebtoken';
-import { Types } from 'mongoose';
+import AccessToken from '../db/models/access_tokens';
+import RefreshToken from '../db/models/refresh_tokens';
 
-import AccessToken from '../model/tokens/access_tokens';
-import RefreshToken from '../model/tokens/refresh_tokens';
-
-import RedisService from './redis_service';
+import Authentication from '../authentication/auth';
 
 class TokenService {
 	async generateToken(
@@ -14,28 +11,14 @@ class TokenService {
 		newAccessToken: AccessToken;
 		newRefreshToken: RefreshToken;
 	}> {
-		const newRefreshToken = await this.generateRefreshToken(ipAddress, id);
-		const newAccessToken = await this.generateAccessToken(
-			ipAddress,
-			id,
-			newRefreshToken.token,
-		);
-		return { newAccessToken, newRefreshToken };
+		return await Authentication.generateTokens(ipAddress, id);
 	}
 
 	async generateRefreshToken(
 		ipAddress: string,
 		id: string,
 	): Promise<RefreshToken> {
-		const newRefreshToken = new RefreshToken(
-			sign({ id }, process.env.JWT_REFRESH_KEY!, {
-				expiresIn: process.env.REFRESH_TOKEN_LIFE,
-			}),
-			ipAddress,
-			new Types.ObjectId(id),
-		);
-		await RedisService.cacheRefreshTokens(id, newRefreshToken);
-		return newRefreshToken;
+		return Authentication.generateRefreshToken(ipAddress, id);
 	}
 
 	async generateAccessToken(
@@ -43,16 +26,7 @@ class TokenService {
 		id: string,
 		refreshToken: string,
 	): Promise<AccessToken> {
-		const newAccessToken = new AccessToken(
-			refreshToken,
-			sign({ id, refreshToken }, process.env.JWT_ACCESS_KEY!, {
-				expiresIn: process.env.ACCESS_TOKEN_LIFE,
-			}),
-			ipAddress,
-			new Types.ObjectId(id),
-		);
-		await RedisService.cacheAccessTokens(id, newAccessToken);
-		return newAccessToken;
+		return Authentication.generateAccessToken(ipAddress, id, refreshToken);
 	}
 }
 

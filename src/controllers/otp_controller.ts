@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 // services
 import OtpService from '../services/otp_services';
-import MessagingService from '../services/messaging_service';
+import MessagingService from '../messaging/email_messenger';
 import QueryService from '../services/query_service';
 import RedisService from '../services/redis_service';
 import UserServices from '../services/user_services';
@@ -12,8 +12,8 @@ import WriterService from '../services/writer_service';
 // utils
 import CustomError from '../utils/error';
 import ServerResponse from '../utils/response';
-import { IUserDocument } from '../model/user';
-import { IWriterDocument } from '../model/writer';
+import { IUserDocument } from '../db/models/user';
+import { IWriterDocument } from '../db/models/writer';
 
 class OtpController {
 	async requestOtp(req: Request, res: Response, next: NextFunction) {
@@ -42,7 +42,7 @@ class OtpController {
 					.data({ otp })
 					.respond(res);
 			} else if (process.env.NODE_ENV === 'PROD') {
-				const { success } = await MessagingService.sendEmail(
+				const success = await MessagingService.send(
 					email as string,
 					`DO NOT SHARE THIS MESSAGE WITH ANYONE\nYour OTP is ${otp}`,
 					'Fresible Wallet Account Verification.',
@@ -144,7 +144,7 @@ class OtpController {
 					.data({ otp, user: account._id })
 					.respond(res);
 			} else if (process.env.NODE_ENV === 'PROD') {
-				const { success } = await MessagingService.sendEmail(
+				const success = await MessagingService.send(
 					email as string,
 					`DO NOT SHARE THIS MESSAGE WITH ANYONE\nYour OTP is ${otp}`,
 					'Fresible Wallet Account Verification.',

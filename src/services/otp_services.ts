@@ -1,11 +1,11 @@
-import { Types } from 'mongoose';
 import { hash } from 'bcrypt';
 
 // services
 import RedisService from './redis_service';
 
 // models
-import Otp, { verify } from '../model/otp';
+import Otp, { verify } from '../db/models/otp';
+
 
 class OtpService {
 	generateOtp(): string {

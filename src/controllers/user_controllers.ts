@@ -7,7 +7,7 @@ import UserServices from '../services/user_services';
 import TokenService from '../services/token_service';
 
 // models
-import { IUserDocument, User } from '../model/user';
+import { IUserDocument, User } from '../db/models/user';
 
 // utils
 import CustomError from '../utils/error';
