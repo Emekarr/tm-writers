@@ -1,5 +1,7 @@
 import { Router } from 'express';
 
+import auth_middleware from '../../middleware/auth_middleware';
+
 import user_routes from './user_routes';
 
 import writer_routes from './writer_routes';
@@ -16,6 +18,6 @@ router.use('/writer', writer_routes);
 
 router.use('/otp', otp_routes);
 
-router.use('/order', order_routes);
+router.use('/order', auth_middleware, order_routes);
 
 export default router;
