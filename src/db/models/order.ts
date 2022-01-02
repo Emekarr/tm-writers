@@ -1,4 +1,4 @@
-import { Document, model, Schema } from 'mongoose';
+import { Document, model, Schema, Types } from 'mongoose';
 
 export interface Order {
 	services: string[];
@@ -12,6 +12,7 @@ export interface IOrder extends Order {
 	uniqueId: string;
 	state: string;
 	orderNumber: number;
+	assignedTo: string;
 }
 
 export interface IOrderDocument extends IOrder, Document {}
@@ -24,6 +25,11 @@ const orderSchemaFields: Record<keyof IOrder, any> = {
 		min: 1,
 		trim: true,
 		default: 1,
+	},
+	assignedTo: {
+		type: Types.ObjectId,
+		default: null,
+		ref: 'Writer',
 	},
 	name: {
 		type: String,
