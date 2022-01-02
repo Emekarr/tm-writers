@@ -72,7 +72,7 @@ class OtpController {
 						.statusCode(404)
 						.respond(res);
 				}
-				user = await UserServices.createUser({ ...userDetails });
+				user = await UserServices.createUser(userDetails);
 				if (!user) throw new CustomError('user creation failed', 400);
 				UserServices.updateUser(user._id, {
 					verified_email: true,

@@ -3,6 +3,7 @@ import { Model, QueryOptions, Document, Query } from 'mongoose';
 import Repository from '../interfaces/repository';
 
 import { PaginateOptions } from '../interfaces/repo_types';
+import user from '../models/user';
 
 export default abstract class MongoDbRepository implements Repository {
 	constructor(private model: Model<any>) {}
@@ -60,7 +61,7 @@ export default abstract class MongoDbRepository implements Repository {
 	async createEntry(payload: any): Promise<Document<any> | null> {
 		let result!: Document<any> | null;
 		try {
-			result = await new this.model(payload).save();
+			result = await new this.model(JSON.parse(payload)).save();
 		} catch (err) {
 			result = null;
 		}
