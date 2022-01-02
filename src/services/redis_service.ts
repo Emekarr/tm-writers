@@ -26,7 +26,7 @@ class RedisService {
 			if (existing_user) throw new Error('User already cached');
 			success = await this.redis.createEntryAndExpire(
 				`${user.email}-user`,
-				JSON.stringify(user),
+				user,
 				300,
 			);
 		} catch (err) {
@@ -47,8 +47,8 @@ class RedisService {
 		);
 	}
 
-	async getWriter(email: string): Promise<User | null> {
-		return (await this.redis.findOne(`${email}-writer`)) as User | null;
+	async getWriter(email: string): Promise<Writer | null> {
+		return (await this.redis.findOne(`${email}-writer`)) as Writer | null;
 	}
 
 	async cacheRefreshTokens(id: string, token: RefreshToken): Promise<boolean> {

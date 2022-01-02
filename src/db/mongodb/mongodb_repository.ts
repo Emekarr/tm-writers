@@ -61,7 +61,7 @@ export default abstract class MongoDbRepository implements Repository {
 	async createEntry(payload: any): Promise<Document<any> | null> {
 		let result!: Document<any> | null;
 		try {
-			result = await new this.model(JSON.parse(payload)).save();
+			result = await new this.model(payload).save();
 		} catch (err) {
 			result = null;
 		}
