@@ -1,3 +1,5 @@
+import { compare } from 'bcrypt';
+
 import { IWriter, IWriterDocument, Writer } from '../db/models/writer';
 
 import WriterRepository from '../db/mongodb/writer_repository';
@@ -33,6 +35,45 @@ class WriterService {
 			id,
 			writer,
 		)) as IWriterDocument | null;
+	}
+
+	async loginWriterWithEmail(email: string, password: string) {
+		let logged_in!: IWriterDocument | null;
+		try {
+			const writer = await this.findByEmail(email);
+			if (!writer) throw new Error('No writer returned');
+			logged_in = await this.loginWriter(writer, password);
+		} catch (err) {
+			logged_in = null;
+		}
+		return logged_in;
+	}
+
+	async loginWriterWithUsername(username: string, password: string) {
+		let logged_in!: IWriterDocument | null;
+		try {
+			const writer = await this.findByUsername(username);
+			if (!writer) throw new Error('No writer returned');
+			logged_in = await this.loginWriter(writer, password);
+		} catch (err) {
+			logged_in = null;
+		}
+		return logged_in;
+	}
+
+	private async loginWriter(
+		writer: IWriterDocument,
+		password: string,
+	): Promise<IWriterDocument | null> {
+		let logged_in!: IWriterDocument | null;
+		try {
+			const correct_password = await compare(password, writer.password!);
+			if (!correct_password) throw new Error('Login failed');
+			logged_in = writer;
+		} catch (err) {
+			logged_in = null;
+		}
+		return logged_in;
 	}
 }
 
