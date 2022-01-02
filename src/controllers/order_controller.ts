@@ -47,7 +47,7 @@ class OrderController {
 			const { id } = req.query;
 			QueryService.checkIfNull([id]);
 			const deleted = await OrderRepository.deleteById(id as string);
-			if (!deleted) throw new Error('Failed to delete order');
+			if (!deleted) throw new CustomError('Failed to delete order', 400);
 			new ServerResponseBuilder('Order deleted successfully').respond(res);
 		} catch (err) {
 			next(err);
