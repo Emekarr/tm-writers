@@ -53,6 +53,21 @@ class OrderController {
 			next(err);
 		}
 	}
+
+	async assignOrder(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { orderId, writerId } = req.body;
+			QueryService.checkIfNull([orderId, writerId]);
+			const assigned = await OrderRepository.updateById(orderId, {
+				assignedTo: writerId,
+			});
+			if (!assigned)
+				throw new CustomError('Failed to assign order to writer', 400);
+			new ServerResponseBuilder('Order successfully assigned').respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
 }
 
 export default Object.freeze(new OrderController());
