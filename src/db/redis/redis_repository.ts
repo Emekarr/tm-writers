@@ -149,6 +149,16 @@ class RedisRepository implements Partial<CachingRepo> {
 		}
 		return success;
 	}
+
+	async deleteFromSet(key: string, payload: string[]): Promise<boolean> {
+		let success!: boolean;
+		try {
+			await this.redis.ZREM(key, payload);
+		} catch (err) {
+			success = false;
+		}
+		return success;
+	}
 	__truncate(): void {
 		this.redis.FLUSHDB();
 	}

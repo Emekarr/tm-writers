@@ -55,20 +55,20 @@ class RedisService {
 		return this.redis.createInSet(`${id}-refresh-tokens`, token);
 	}
 
-	async getRefreshToken(id: string): Promise<RefreshToken | null> {
-		return (await this.redis.findOne(
-			`${id}-refresh-tokens`,
-		)) as RefreshToken | null;
+	async getRefreshTokens(id: string): Promise<string[] | null> {
+		return await this.redis.findSet(`${id}-refresh-tokens`);
 	}
 
 	async cacheAccessTokens(id: string, token: AccessToken): Promise<boolean> {
 		return this.redis.createInSet(`${id}-access-tokens`, token);
 	}
 
-	async getAccessToken(id: string): Promise<AccessToken | null> {
-		return (await this.redis.findOne(
-			`${id}-access-tokens`,
-		)) as AccessToken | null;
+	async getAccessTokens(id: string): Promise<string[] | null> {
+		return await this.redis.findSet(`${id}-access-tokens`);
+	}
+
+	async deleteAccessToken(id: string, tokens: string[]): Promise<boolean> {
+		return await this.redis.deleteFromSet(id, tokens);
 	}
 }
 

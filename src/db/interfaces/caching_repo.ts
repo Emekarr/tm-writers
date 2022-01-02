@@ -25,5 +25,6 @@ export default interface CachingRepository {
 	): Promise<any>;
 	// delete
 	deleteOne(key: string): Promise<any>;
+	deleteFromSet(key: string, payload: any[]): Promise<any>;
 	__truncate(): void;
 }
