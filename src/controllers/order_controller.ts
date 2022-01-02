@@ -26,6 +26,21 @@ class OrderController {
 			next(err);
 		}
 	}
+
+	async getOrders(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { limit, page } = req.query;
+			const orders = await OrderRepository.findAll(
+				{ limit: Number(limit), page: Number(page) },
+				['assignedTo'],
+			);
+			new ServerResponseBuilder('Order retrieved successfully')
+				.data(orders)
+				.respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
 }
 
 export default Object.freeze(new OrderController());
