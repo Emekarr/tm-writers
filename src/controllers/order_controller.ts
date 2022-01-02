@@ -41,6 +41,18 @@ class OrderController {
 			next(err);
 		}
 	}
+
+	async deleteOrder(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { id } = req.query;
+			QueryService.checkIfNull([id]);
+			const deleted = await OrderRepository.deleteById(id as string);
+			if (!deleted) throw new Error('Failed to delete order');
+			new ServerResponseBuilder('Order deleted successfully').respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
 }
 
 export default Object.freeze(new OrderController());
