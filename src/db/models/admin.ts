@@ -6,7 +6,7 @@ import CustomError from '../../utils/error';
 export interface Admin {
 	name: string;
 	email: string;
-	firsttname: string;
+	firstname: string;
 	lastname: string;
 	password?: string;
 	phoneNumber: string;
@@ -34,7 +34,7 @@ const adminSchemaFields: Record<keyof Admin, any> = {
 				throw new CustomError('invalid email provided', 400);
 		},
 	},
-	firsttname: {
+	firstname: {
 		type: String,
 		required: true,
 		trim: true,

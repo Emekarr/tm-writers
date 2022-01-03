@@ -15,6 +15,8 @@ import('./db/redis/connect').then((redisConnection) => {
 	redisConnection.default.connectToRedis();
 });
 
+import('./utils/seeder');
+
 class App {
 	private express: Application;
 
