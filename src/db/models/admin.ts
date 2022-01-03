@@ -66,7 +66,14 @@ const adminSchemaFields: Record<keyof Admin, any> = {
 	},
 };
 
-const AdminSchema = new Schema(adminSchemaFields, { timestamps: true });
+const AdminSchema = new Schema(adminSchemaFields, {
+	timestamps: true,
+	capped: {
+		size: 1024,
+		max: 1,
+		autoIndexId: true,
+	},
+});
 
 AdminSchema.pre('save', async function (this: IAdminDocument, next) {
 	if (this.isModified('password')) {
