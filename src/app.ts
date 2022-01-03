@@ -15,6 +15,7 @@ import('./db/redis/connect').then((redisConnection) => {
 	redisConnection.default.connectToRedis();
 });
 
+// create admin when server starts
 import('./utils/seeder');
 
 class App {
