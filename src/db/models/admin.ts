@@ -61,7 +61,7 @@ const adminSchemaFields: Record<keyof Admin, any> = {
 		type: String,
 		required: true,
 		trim: true,
-		maxlength: 10,
+		maxlength: 13,
 		minlength: 1,
 	},
 };
