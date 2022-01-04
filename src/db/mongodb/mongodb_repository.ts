@@ -49,12 +49,11 @@ export default abstract class MongoDbRepository implements Repository {
 		const limit = paginate.limit === 0 ? 5 : paginate.limit;
 		const page = paginate.page === 0 ? 5 : paginate.page;
 		const docs: Document[] = await query.limit(limit).skip((page - 1) * limit);
-		return await Promise.all(
-			docs.map(async (doc) => {
-				const test = await this.__populateDocument(doc, populateKeys);
-				return test;
-			}),
-		);
+		return await Promise.all(docs.map(async (doc) => {
+			const test = await this.__populateDocument(doc, populateKeys);
+			return test
+		}))
+		
 	}
 
 	async createEntry(payload: any): Promise<Document<any> | null> {

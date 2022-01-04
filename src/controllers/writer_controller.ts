@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 // services
 import WriterService from '../services/writer_service';
 import QueryService from '../services/query_service';
+import TokenService from '../services/token_service';
 
 // models
 import { IWriter, Writer, IWriterDocument } from '../db/models/writer';
@@ -88,26 +89,42 @@ class WriterController {
 		}
 	};
 
-	async login(req: Request, res: Response, next: NextFunction) {
+	login = async (req: Request, res: Response, next: NextFunction) => {
 		try {
 			const { account, password } = req.body;
 			QueryService.checkIfNull([account, password]);
 			const email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 			let writer: IWriterDocument | null;
 			if (email_regex.test(account)) {
-				writer = await WriterService.loginWriterWithUsername(account, password);
-			} else {
 				writer = await WriterService.loginWriterWithEmail(account, password);
+			} else {
+				writer = await WriterService.loginWriterWithUsername(account, password);
 			}
 			if (!writer)
 				return new ServerResponse('Login attempt failed')
 					.success(false)
 					.statusCode(400)
 					.respond(res);
+			const { newAccessToken, newRefreshToken } =
+				await TokenService.generateToken(
+					req.socket.remoteAddress!,
+					writer!._id,
+				);
+			if (!newAccessToken || !newRefreshToken)
+				throw new Error('tokens could not be generated');
+			res.cookie('ACCESS_TOKEN', newAccessToken.token, {
+				httpOnly: true,
+				maxAge: parseInt(process.env.ACCESS_TOKEN_LIFE as string, 10),
+			});
+			res.cookie('REFRESH_TOKEN', newRefreshToken.token, {
+				httpOnly: true,
+				maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
+			});
+			new ServerResponse('Login attepmt successful').data(writer).respond(res);
 		} catch (err) {
 			next(err);
 		}
-	}
+	};
 }
 
 export default new WriterController();
