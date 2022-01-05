@@ -10,6 +10,8 @@ import otp_routes from './otp_routes';
 
 import order_routes from './order_routes';
 
+import admin_route from './admin_routes';
+
 const router = Router();
 
 router.use('/user', user_routes);
@@ -18,6 +20,8 @@ router.use('/writer', writer_routes);
 
 router.use('/otp', otp_routes);
 
-router.use('/order', auth_middleware, order_routes);
+router.use('/order', auth_middleware,  order_routes);
+
+router.use('/admin', admin_route);
 
 export default router;
