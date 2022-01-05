@@ -87,6 +87,19 @@ class UserController {
 			next(err);
 		}
 	};
+
+	getUser = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.body;
+			QueryService.checkIfNull([id]);
+			const user = await UserServices.findById(id);
+			if (!user)
+				return new ServerResponse('User not found').data({}).respond(res);
+			new ServerResponse('User found.').data(user).respond(res);
+		} catch (err) {
+			next(err);
+		}
+	};
 }
 
 export default new UserController();
