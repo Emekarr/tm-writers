@@ -139,10 +139,9 @@ export default abstract class MongoDbRepository implements Repository {
 	async updateById(id: string, payload: object): Promise<boolean> {
 		let success!: boolean;
 		try {
-			await this.model.findByIdAndUpdate(id, payload, {}, (err, doc, res) => {
-				if (!doc) throw new Error('Document not found');
-				success = true;
-			});
+			const updatedDoc = await this.model.findByIdAndUpdate(id, payload);
+			if (!updatedDoc) throw new Error('Doc could not be updated');
+			success = true;
 		} catch (err) {
 			success = false;
 		}
