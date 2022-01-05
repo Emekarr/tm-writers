@@ -90,9 +90,9 @@ class UserController {
 
 	getUser = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const { id } = req.body;
+			const { id } = req.query;
 			QueryService.checkIfNull([id]);
-			const user = await UserServices.findById(id);
+			const user = await UserServices.findById(id as string);
 			if (!user)
 				return new ServerResponse('User not found').data({}).respond(res);
 			new ServerResponse('User found.').data(user).respond(res);
