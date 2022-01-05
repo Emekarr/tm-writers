@@ -1,4 +1,5 @@
 import { v4 } from 'uuid';
+import { isValidObjectId } from 'mongoose';
 
 import { Request, Response, NextFunction } from 'express';
 import { IOrderDocument } from '../db/models/order';
@@ -16,7 +17,7 @@ class OrderController {
 			const { services, message, timeline, number, name } = req.body;
 			QueryService.checkIfNull([services, message, timeline, name, number]);
 			const orderNumber = (await OrderRepository.findLast())
-				? ((await OrderRepository.findLast()) as IOrderDocument).orderNumber
+				? ((await OrderRepository.findLast()) as IOrderDocument).orderNumber + 1
 				: 1;
 			const order = await OrderRepository.createEntry({
 				services,
@@ -55,6 +56,8 @@ class OrderController {
 		try {
 			const { id } = req.query;
 			QueryService.checkIfNull([id]);
+			if (!isValidObjectId(id as string))
+				throw new CustomError('Please pass in a valid objectId', 400);
 			const deleted = await OrderRepository.deleteById(id as string);
 			if (!deleted) throw new CustomError('Failed to delete order', 400);
 			new ServerResponseBuilder('Order deleted successfully').respond(res);

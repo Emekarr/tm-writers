@@ -72,7 +72,6 @@ const orderSchemaFields: Record<keyof IOrder, any> = {
 		maxlength: 1000,
 		minlength: 2,
 		trim: true,
-		unique: true,
 	},
 	timeline: {
 		type: String,

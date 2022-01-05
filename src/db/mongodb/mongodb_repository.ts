@@ -3,7 +3,6 @@ import { Model, QueryOptions, Document, Query } from 'mongoose';
 import Repository from '../interfaces/repository';
 
 import { PaginateOptions } from '../interfaces/repo_types';
-import user from '../models/user';
 
 export default abstract class MongoDbRepository implements Repository {
 	constructor(private model: Model<any>) {}
@@ -58,7 +57,9 @@ export default abstract class MongoDbRepository implements Repository {
 	}
 
 	async findLast(): Promise<Document<any> | null> {
-		return ((await this.model.find().limit(-1)) as Document<any>[])[0];
+		return (
+			(await this.model.find().sort({ _id: -1 }).limit(1)) as Document<any>[]
+		)[0];
 	}
 
 	async createEntry(payload: any): Promise<Document<any> | null> {
@@ -217,9 +218,8 @@ export default abstract class MongoDbRepository implements Repository {
 	async deleteById(id: string): Promise<boolean> {
 		let success!: boolean;
 		try {
-			await this.model.findByIdAndDelete(id, {}, (err, doc, res) => {
-				if (!doc) throw new Error('Document not found');
-			});
+			const deletedDoc = await this.model.findByIdAndDelete(id);
+			if (!deletedDoc) throw new Error('Document not found');
 			success = true;
 		} catch (err) {
 			success = false;
