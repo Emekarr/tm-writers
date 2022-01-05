@@ -57,6 +57,10 @@ export default abstract class MongoDbRepository implements Repository {
 		);
 	}
 
+	async findLast(): Promise<Document<any> | null> {
+		return ((await this.model.find().limit(-1)) as Document<any>[])[0];
+	}
+
 	async createEntry(payload: any): Promise<Document<any> | null> {
 		let result!: Document<any> | null;
 		try {

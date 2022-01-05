@@ -1,4 +1,7 @@
+import { v4 } from 'uuid';
+
 import { Request, Response, NextFunction } from 'express';
+import { IOrderDocument } from '../db/models/order';
 
 import OrderRepository from '../db/mongodb/order_repository';
 
@@ -10,13 +13,19 @@ import ServerResponseBuilder from '../utils/response';
 class OrderController {
 	async createOrder(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { services, message, timeline, number } = req.body;
-			QueryService.checkIfNull([services, message, timeline, number]);
+			const { services, message, timeline, number, name } = req.body;
+			QueryService.checkIfNull([services, message, timeline, name, number]);
+			const orderNumber = (await OrderRepository.findLast())
+				? ((await OrderRepository.findLast()) as IOrderDocument).orderNumber
+				: 1;
 			const order = await OrderRepository.createEntry({
 				services,
 				message,
 				timeline,
 				number,
+				orderNumber,
+				uniqueId: v4(),
+				name,
 			});
 			if (!order) throw new CustomError('Order failed to create', 400);
 			new ServerResponseBuilder('Order creation successful')

@@ -5,10 +5,10 @@ export interface Order {
 	message: string;
 	timeline: string;
 	number: number;
+	name: string;
 }
 
 export interface IOrder extends Order {
-	name: string;
 	uniqueId: string;
 	state: string;
 	orderNumber: number;
@@ -37,7 +37,6 @@ const orderSchemaFields: Record<keyof IOrder, any> = {
 		maxlength: 50,
 		minlength: 2,
 		trim: true,
-		unique: true,
 	},
 	uniqueId: {
 		type: String,
@@ -82,7 +81,7 @@ const orderSchemaFields: Record<keyof IOrder, any> = {
 	},
 };
 
-const OrderSchema = new Schema(orderSchemaFields);
+const OrderSchema = new Schema(orderSchemaFields, { timestamps: true });
 
 OrderSchema.method('toJSON', function (this: IOrderDocument) {
 	const order = this.toObject();
