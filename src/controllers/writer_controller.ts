@@ -125,6 +125,19 @@ class WriterController {
 			next(err);
 		}
 	};
+
+	getWriter = async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			const { id } = req.query;
+			QueryService.checkIfNull([id]);
+			const writer = await WriterService.findById(id as string);
+			if (!writer)
+				return new ServerResponse('Writer not found').data({}).respond(res);
+			new ServerResponse('Writer found.').data(writer).respond(res);
+		} catch (err) {
+			next(err);
+		}
+	};
 }
 
 export default new WriterController();
