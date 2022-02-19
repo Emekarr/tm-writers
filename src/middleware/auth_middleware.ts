@@ -3,30 +3,47 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 
 // utils
 import ServerResponse from '../utils/response';
+import { verifyData } from '../utils/token_generation';
 
-// services
-import RedisService from '../services/redis_service';
-import TokenService from '../services/token_service';
+// usecases
+import redis_repository from '../repository/redis/redis_repository';
 import AccessToken from '../db/models/redis/access_tokens';
 
-const generateFromRefresh = async (
-	refreshToken: string,
-	ipAddress: string,
-): Promise<string | void> => {
-	let refreshDecoded: JwtPayload | undefined;
-	jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY!, (err, decoded) => {
-		refreshDecoded = decoded;
-	});
+// authentication
+import Authentication from '../authentication/auth';
 
+const generateFromRefresh = async (refreshToken: string, ipAddress: string) => {
+	const refreshDecoded = verifyData(
+		refreshToken,
+		process.env.JWT_REFRESH_KEY!,
+		{},
+	);
 	if (!refreshDecoded) return;
 
-	const { token } = await TokenService.generateAccessToken(
-		ipAddress,
-		refreshDecoded!.id,
-		refreshToken,
+	const refreshTokensFromCache = await redis_repository.findSet(
+		`${(refreshDecoded as JwtPayload).id}-refresh-tokens`,
 	);
 
-	return token;
+	if (!refreshTokensFromCache || refreshTokensFromCache.length === 0) return;
+
+	const exists = refreshTokensFromCache.find(
+		(token: string) =>
+			(JSON.parse(token) as AccessToken).token === refreshToken,
+	);
+	if (!exists) return;
+
+	const { token } = await Authentication.generateAccessToken(
+		ipAddress,
+		(refreshDecoded as JwtPayload).id,
+		refreshToken,
+		(refreshDecoded as JwtPayload).account,
+	);
+
+	return {
+		token,
+		id: (refreshDecoded as JwtPayload).id,
+		account: (refreshDecoded as JwtPayload).account,
+	};
 };
 
 export default async (req: Request, res: Response, next: NextFunction) => {
@@ -39,9 +56,11 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 				.success(false)
 				.respond(res);
 
-		let accessDecoded: JwtPayload | undefined;
+		let accessDecoded: JwtPayload | undefined | string;
 		let accessToken!: string | void;
 		let tokenErr!: any;
+		let id!: string;
+		let account!: string;
 		await jwt.verify(
 			accessTokenHeader,
 			process.env.JWT_ACCESS_KEY!,
@@ -49,10 +68,13 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 				if (err) {
 					tokenErr = err;
 					if (err.name === 'TokenExpiredError') {
-						accessToken = await generateFromRefresh(
+						const response = await generateFromRefresh(
 							refreshTokenHeader,
 							req.socket.remoteAddress!,
 						);
+						accessToken = response?.token;
+						id = response?.id;
+						account = response?.account;
 					}
 				}
 				accessDecoded = decoded;
@@ -73,6 +95,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 				httpOnly: true,
 				maxAge: parseInt(process.env.ACCESS_TOKEN_LIFE as string, 10),
 			});
+			req.id = id;
+			req.account = account;
 			return next();
 		}
 
@@ -84,9 +108,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 				.success(false)
 				.respond(res);
 
-		const accessTokensFromCache = await RedisService.getAccessTokens(
-			accessDecoded.id,
+		const accessTokensFromCache = await redis_repository.findSet(
+			`${(accessDecoded as JwtPayload).id}-access-tokens`,
 		);
+
 		let cacheAccessToken!: AccessToken;
 
 		if (!accessTokensFromCache || accessTokensFromCache.length === 0) {
@@ -94,28 +119,30 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 				.statusCode(400)
 				.respond(res);
 		} else {
-			const exists = accessTokensFromCache.filter(
-				(token) =>
+			const exists = accessTokensFromCache.find(
+				(token: string) =>
 					(JSON.parse(token) as AccessToken).token === accessTokenHeader,
 			);
-			if (exists.length !== 1) {
+			if (!exists) {
 				return new ServerResponse('Invalid token used')
 					.statusCode(400)
 					.respond(res);
 			}
-			cacheAccessToken = JSON.parse(exists[0]);
+			cacheAccessToken = JSON.parse(exists);
 		}
 
 		if (req.socket.remoteAddress! !== cacheAccessToken.ipAddress) {
-			await RedisService.deleteAccessToken(accessDecoded.id, [
-				JSON.stringify(cacheAccessToken),
-			]);
+			await redis_repository.deleteFromSet(
+				`${(accessDecoded as JwtPayload).id}-access-tokens`,
+				[JSON.stringify(cacheAccessToken)],
+			);
 			return new ServerResponse('token used from unrecognised device.')
 				.statusCode(400)
 				.success(false)
 				.respond(res);
 		}
-		req.id = accessDecoded.id;
+		req.id = (accessDecoded as JwtPayload).id;
+		req.account = (accessDecoded as JwtPayload).account;
 		next();
 	} catch (err) {
 		next(err);

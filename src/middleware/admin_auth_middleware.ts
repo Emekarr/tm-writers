@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 
-import AdminRepository from '../db/mongodb/admin_repository';
+import ServerResponse from '../utils/response';
 
 export default async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const admin = await AdminRepository.findManyByFields(
-			{ _id: req.id },
-			{ limit: 1, page: 1 },
-		);
-		if (!admin) throw new Error('This route is for only admins');
+		if (req.account !== 'admin')
+			return new ServerResponse('You are not allowed into this route')
+				.success(false)
+				.statusCode(403)
+				.respond(res);
 		next();
 	} catch (err) {
 		next(err);
