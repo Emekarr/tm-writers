@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import sgMail, { MailDataRequired } from '@sendgrid/mail';
+sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
 import Messenger from './interface/messenger';
 
