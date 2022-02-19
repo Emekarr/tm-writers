@@ -1,6 +1,6 @@
 import { compare } from 'bcrypt';
 
-import { IWriter, IWriterDocument, Writer } from '../db/models/writer';
+import { IWriter, IWriterDocument, Writer } from '../db/models/mongodb/writer';
 
 import WriterRepository from '../db/mongodb/writer_repository';
 

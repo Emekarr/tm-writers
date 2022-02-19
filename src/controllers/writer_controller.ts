@@ -6,7 +6,7 @@ import QueryService from '../services/query_service';
 import TokenService from '../services/token_service';
 
 // models
-import { IWriter, Writer, IWriterDocument } from '../db/models/writer';
+import { IWriter, Writer, IWriterDocument } from '../db/models/mongodb/writer';
 
 // utils
 import CustomError from '../utils/error';

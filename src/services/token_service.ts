@@ -1,4 +1,4 @@
-import AccessToken from '../db/models/access_tokens';
+import AccessToken from '../db/models/redis/access_tokens';
 import RefreshToken from '../db/models/refresh_tokens';
 
 import Authentication from '../authentication/auth';

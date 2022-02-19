@@ -1,8 +1,8 @@
-import { Model, QueryOptions, Document, Query } from 'mongoose';
+import { Model, ClientSession, Document, Query, startSession } from 'mongoose';
 
-import Repository from '../interfaces/repository';
+import Repository from '../../db/interfaces/repository';
 
-import { PaginateOptions } from '../interfaces/repo_types';
+import { PaginateOptions } from '../../db/interfaces/repo_types';
 
 export default abstract class MongoDbRepository implements Repository {
 	constructor(private model: Model<any>) {}
@@ -24,10 +24,13 @@ export default abstract class MongoDbRepository implements Repository {
 		query: Query<any, any>,
 		populateKeys: string[] = [],
 	): Promise<Document> {
-		populateKeys.forEach(async (key) => {
-			await query.populate(key);
-		});
-		return await query;
+		if (populateKeys.length <= 0) return await query;
+		let populated!: Document;
+		for (let i = 0; i < populateKeys.length; i++) {
+			const key = populateKeys[i];
+			populated = await query.populate(key);
+		}
+		return populated;
 	}
 
 	// used to populate a mongoose documents
@@ -56,6 +59,25 @@ export default abstract class MongoDbRepository implements Repository {
 		);
 	}
 
+	async startSession() {
+		return await this.model.startSession();
+	}
+
+	async startTransaction(session: ClientSession, job: () => Promise<any>) {
+		let result: any;
+		try {
+			session.startTransaction();
+			result = await job();
+			await session.commitTransaction();
+			session.endSession();
+		} catch (err: any) {
+			await session.abortTransaction();
+			session.endSession();
+			result = err.message;
+		}
+		return result;
+	}
+
 	async findLast(): Promise<Document<any> | null> {
 		return (
 			(await this.model.find().sort({ _id: -1 }).limit(1)) as Document<any>[]
@@ -67,7 +89,7 @@ export default abstract class MongoDbRepository implements Repository {
 		try {
 			result = await new this.model(payload).save();
 		} catch (err) {
-			result = null;
+			result = (err as any).message;
 		}
 		return result;
 	}
@@ -106,7 +128,10 @@ export default abstract class MongoDbRepository implements Repository {
 		return results;
 	}
 
-	async findOneByFields(filter: object, populateKeys?: string[]): Promise<any> {
+	async findOneByFields(
+		filter: object,
+		populateKeys?: string[],
+	): Promise<Document<any> | null> {
 		let result!: Document<any> | null;
 		try {
 			result = await this.__populateQuery(
@@ -154,29 +179,27 @@ export default abstract class MongoDbRepository implements Repository {
 	): Promise<Document | null> {
 		let result!: Document | null;
 		try {
-			await this.model.findByIdAndUpdate(id, payload, {}, (err, doc, res) => {
-				if (!doc) throw new Error('Document not found');
-				result = doc;
-			});
+			result = await this.model.findByIdAndUpdate(id, payload, { new: true });
 		} catch (err) {
 			result = null;
 		}
 		return result;
 	}
-	async updateByFields(filter: object, payload: object): Promise<boolean> {
-		let success!: boolean;
+
+	async updateByFields(
+		filter: object,
+		payload: object,
+	): Promise<boolean | string> {
+		let success!: boolean | string;
 		try {
-			await this.model.findOneAndUpdate(
-				filter,
-				payload,
-				{},
-				(err, doc, res) => {
+			await this.model
+				.findOneAndUpdate(filter, payload, {}, (err, doc, res) => {
 					if (!doc) throw new Error('Document not found');
 					success = true;
-				},
-			);
-		} catch (err) {
-			success = false;
+				})
+				.clone();
+		} catch (err: any) {
+			success = err.message;
 		}
 		return success;
 	}
@@ -201,17 +224,17 @@ export default abstract class MongoDbRepository implements Repository {
 		return result;
 	}
 
-	async deleteMany(filter: object): Promise<boolean> {
-		let success: boolean;
+	async deleteMany(filter: object): Promise<string | boolean> {
+		let message: string | boolean;
 		try {
 			await this.model.deleteMany(filter, {}, (err) => {
 				if (err) throw new Error(err.message);
 			});
-			success = true;
-		} catch (err) {
-			success = false;
+			message = true;
+		} catch (err: any) {
+			message = err.message;
 		}
-		return success;
+		return message;
 	}
 
 	async deleteById(id: string): Promise<boolean> {
@@ -226,16 +249,15 @@ export default abstract class MongoDbRepository implements Repository {
 		return success;
 	}
 
-	async saveData(payload: Document): Promise<boolean> {
-		let success!: boolean;
+	async saveData(payload: Document): Promise<Document | null> {
+		let savedDoc!: Document | null;
 		try {
-			const savedDoc = await payload.save();
-			if (!savedDoc) throw new Error('Failed to save doc');
-			success = true;
+			savedDoc = await payload.save();
 		} catch (err) {
-			success = false;
+			console.log(err);
+			savedDoc = null;
 		}
-		return success;
+		return savedDoc;
 	}
 
 	__truncate(condition: object) {

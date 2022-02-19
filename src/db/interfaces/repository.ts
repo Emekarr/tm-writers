@@ -41,4 +41,8 @@ export default interface Repository {
 	saveData(payload: any): Promise<any>;
 	// truncate
 	__truncate(condition: object, ...args: any[]): void;
+
+	// transactions
+	startTransaction(sesison: any, job: () => Promise<any>): Promise<any>;
+	startSession(): Promise<any>;
 }

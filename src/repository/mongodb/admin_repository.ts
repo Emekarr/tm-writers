@@ -1,4 +1,4 @@
-import AdminModel from '../models/admin';
+import AdminModel from '../../db/models/mongodb/admin';
 
 import MongoDbRepository from './mongodb_repository';
 

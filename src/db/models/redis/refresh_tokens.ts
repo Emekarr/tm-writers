@@ -1,7 +1,6 @@
-/* eslint-disable no-useless-constructor */
 import { Types } from 'mongoose';
 
-import RefreshTokenType from '../interfaces/refresh_tokens';
+import RefreshTokenType from '../../interfaces/refresh_token';
 
 export default class RefreshToken implements RefreshTokenType {
 	constructor(

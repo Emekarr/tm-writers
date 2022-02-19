@@ -1,6 +1,6 @@
 import { createClient } from 'redis';
 
-import CachingRepo from '../interfaces/caching_repo';
+import CachingRepo from '../../db/interfaces/caching_repo';
 
 class RedisRepository implements Partial<CachingRepo> {
 	public redis;

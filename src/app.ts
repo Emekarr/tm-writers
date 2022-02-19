@@ -11,7 +11,7 @@ import router from './routes';
 
 // connect to databases
 import('./db/mongodb/connect');
-import('./db/redis/connect').then((redisConnection) => {
+import('./repository/redis/connect').then((redisConnection) => {
 	redisConnection.default.connectToRedis();
 });
 

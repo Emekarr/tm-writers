@@ -1,7 +1,7 @@
 import { Document, model, Schema } from 'mongoose';
 import { hash } from 'bcrypt';
 
-import CustomError from '../../utils/error';
+import CustomError from '../../../utils/error';
 
 export interface Admin {
 	name: string;

@@ -1,7 +1,7 @@
 import { sign } from 'jsonwebtoken';
 import { Types } from 'mongoose';
 
-import AccessToken from '../db/models/access_tokens';
+import AccessToken from '../db/models/redis/access_tokens';
 import RefreshToken from '../db/models/refresh_tokens';
 import RedisService from '../services/redis_service';
 import { AuthenticationType } from './auth_types';

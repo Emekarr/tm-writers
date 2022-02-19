@@ -13,7 +13,7 @@ import WriterService from '../services/writer_service';
 import CustomError from '../utils/error';
 import ServerResponse from '../utils/response';
 import { IUserDocument } from '../db/models/user';
-import { IWriterDocument } from '../db/models/writer';
+import { IWriterDocument } from '../db/models/mongodb/writer';
 
 class OtpController {
 	async requestOtp(req: Request, res: Response, next: NextFunction) {

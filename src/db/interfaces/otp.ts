@@ -1,1 +1,4 @@
-export default interface OtpType {}
+export default interface OtpType {
+	contact: string;
+	code: string;
+}

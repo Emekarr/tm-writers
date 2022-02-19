@@ -1,4 +1,4 @@
-import WriterModel from '../models/writer';
+import WriterModel from '../../db/models/mongodb/writer';
 
 import MongoDbRepository from './mongodb_repository';
 

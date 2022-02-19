@@ -1,12 +1,12 @@
 import { createClient } from 'redis';
 
-import RedisRepository from '../db/redis/redis_repository';
+import RedisRepository from '../repository/redis/redis_repository';
 
 import { User } from '../db/models/user';
 import Otp from '../db/models/otp';
-import AccessToken from '../db/models/access_tokens';
+import AccessToken from '../db/models/redis/access_tokens';
 import RefreshToken from '../db/models/refresh_tokens';
-import { Writer } from '../db/models/writer';
+import { Writer } from '../db/models/mongodb/writer';
 
 class RedisService {
 	private redis = RedisRepository;

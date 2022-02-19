@@ -1,9 +1,9 @@
 import { Schema, model, Document } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-import CustomError from '../../utils/error';
-import countries from '../../utils/countries';
-import qualification from '../../utils/qualifications';
+import CustomError from '../../../utils/error';
+import countries from '../../../utils/countries';
+import qualification from '../../../utils/qualifications';
 
 export interface Writer {
 	username?: string;

@@ -7,7 +7,7 @@ import ServerResponse from '../utils/response';
 // services
 import RedisService from '../services/redis_service';
 import TokenService from '../services/token_service';
-import AccessToken from '../db/models/access_tokens';
+import AccessToken from '../db/models/redis/access_tokens';
 
 const generateFromRefresh = async (
 	refreshToken: string,

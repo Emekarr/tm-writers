@@ -1,4 +1,4 @@
-import UserModel from '../models/user';
+import UserModel from '../../db/models/mongodb/user';
 
 import MongoDbRepository from './mongodb_repository';
 

@@ -1,4 +1,4 @@
-import OrderModel from '../models/order';
+import OrderModel from '../../db/models/mongodb/order';
 
 import MongoDbRepository from './mongodb_repository';
 
