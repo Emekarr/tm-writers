@@ -1,11 +1,8 @@
 import { connect, connection, ConnectOptions } from 'mongoose';
 
 class MongooseConnection {
-	constructor() {
-		connect(process.env.DB_URL!, {
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-		} as ConnectOptions)
+	connect() {
+		connect(process.env.DB_URL!, {} as ConnectOptions)
 			.then(() => {
 				console.log('DB CONNECTION SUCCESSFUL');
 			})
