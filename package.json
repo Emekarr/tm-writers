@@ -38,6 +38,7 @@
 		"joi-phone-number": "^5.1.0",
 		"jsonwebtoken": "^8.5.1",
 		"mongoose": "^6.0.13",
+		"mongoose-paginate-v2": "^1.6.2",
 		"redis": "^4.0.0",
 		"typescript": "^4.4.4",
 		"uuid": "^8.3.2"

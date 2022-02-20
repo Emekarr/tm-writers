@@ -1,4 +1,5 @@
-import { Schema, model, Document } from 'mongoose';
+import { Document, model, Schema, PaginateModel } from 'mongoose';
+import mongoosePaginate from 'mongoose-paginate-v2';
 import { hashData } from '../../../utils/hash';
 
 export interface User {
@@ -64,6 +65,8 @@ const user_schema_field: Record<keyof IUser, any> = {
 
 const UserSchema = new Schema(user_schema_field, { timestamps: true });
 
+UserSchema.plugin(mongoosePaginate);
+
 UserSchema.pre('save', async function (this: IUserDocument, next) {
 	if (this.isModified('password')) {
 		this.password = await hashData(this.password);
@@ -78,4 +81,7 @@ UserSchema.method('toJSON', function (this: IUserDocument) {
 	return user;
 });
 
-export default model<IUserDocument>('User', UserSchema);
+export default model<IUserDocument, PaginateModel<IUserDocument>>(
+	'User',
+	UserSchema,
+);

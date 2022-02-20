@@ -1,4 +1,5 @@
-import { Document, model, Schema, Types } from 'mongoose';
+import { Document, model, Schema, Types, PaginateModel } from 'mongoose';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 export interface Order {
 	services: string[];
@@ -82,10 +83,15 @@ const orderSchemaFields: Record<keyof IOrder, any> = {
 
 const OrderSchema = new Schema(orderSchemaFields, { timestamps: true });
 
+OrderSchema.plugin(mongoosePaginate);
+
 OrderSchema.method('toJSON', function (this: IOrderDocument) {
 	const order = this.toObject();
 	delete order.__v;
 	return order;
 });
 
-export default model<IOrderDocument>('Order', OrderSchema);
+export default model<IOrderDocument, PaginateModel<IOrderDocument>>(
+	'Order',
+	OrderSchema,
+);

@@ -1,4 +1,5 @@
-import { Schema, model, Document } from 'mongoose';
+import { Document, model, Schema, Types, PaginateModel } from 'mongoose';
+import mongoosePaginate from 'mongoose-paginate-v2';
 import bcrypt from 'bcrypt';
 
 export interface Writer {
@@ -140,6 +141,8 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 
 const WriterSchema = new Schema(writer_schema_fields, { timestamps: true });
 
+WriterSchema.plugin(mongoosePaginate);
+
 WriterSchema.pre('save', async function (this: IWriterDocument, next) {
 	if (this.isModified('password')) {
 		this.password = await bcrypt.hash(this.password!, 10);
@@ -154,4 +157,7 @@ WriterSchema.method('toJSON', function (this: IWriterDocument) {
 	return writer;
 });
 
-export default model<IWriterDocument>('Writer', WriterSchema);
+export default model<IWriterDocument, PaginateModel<IWriterDocument>>(
+	'Writer',
+	WriterSchema,
+);

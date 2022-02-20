@@ -34,7 +34,6 @@ export default abstract class OrderController {
 			const orders = await OrderRepository.findManyByFields(
 				{ createdBy: req.id },
 				{ limit: Number(limit), page: Number(page) },
-				['assignedTo'],
 			);
 			new ServerResponse('Order retrieved successfully')
 				.data(orders)
@@ -47,10 +46,10 @@ export default abstract class OrderController {
 	static async getAllOrders(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { limit, page } = req.query;
-			const orders = await OrderRepository.findAll(
-				{ limit: Number(limit), page: Number(page) },
-				['assignedTo'],
-			);
+			const orders = await OrderRepository.findAll({
+				limit: Number(limit),
+				page: Number(page),
+			});
 			new ServerResponse('Order retrieved successfully')
 				.data(orders)
 				.respond(res);

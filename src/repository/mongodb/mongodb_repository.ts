@@ -42,6 +42,7 @@ export default abstract class MongoDbRepository implements Repository {
 		return doc;
 	}
 
+	// NOT USED BECASUE OF MONGOOSE PAGINATE V2 LIBRARY
 	// used to paginate databse requests
 	private async __paginate(
 		query: Query<any, any>,
@@ -115,15 +116,15 @@ export default abstract class MongoDbRepository implements Repository {
 
 	async findManyByFields(
 		filter: object,
-		paginate?: PaginateOptions,
-		populateKeys?: string[],
-	): Promise<Document[]> {
-		let results!: Document[];
+		paginate: PaginateOptions = { limit: 10, page: 1 },
+		populateKeys: string[] = [],
+	): Promise<any> {
+		let results!: any;
 		try {
-			results = await this.__paginate(
-				this.model.find(this.__cleanFilterOptions(filter)),
+			(paginate as any).populate = populateKeys;
+			results = await (this.model as any).paginate(
+				this.__cleanFilterOptions(filter),
 				paginate,
-				populateKeys,
 			);
 		} catch (err) {
 			results = [];
@@ -153,11 +154,8 @@ export default abstract class MongoDbRepository implements Repository {
 	): Promise<Document[]> {
 		let results: Document[];
 		try {
-			results = await this.__paginate(
-				this.model.find(),
-				paginate,
-				populateKeys,
-			);
+			(paginate as any).populate = populateKeys;
+			results = await (this.model as any).paginate(paginate);
 		} catch (err) {
 			results = [];
 		}
