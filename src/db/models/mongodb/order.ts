@@ -6,18 +6,23 @@ export interface Order {
 	timeline: string;
 	number: number;
 	name: string;
+	createdBy: string;
+	uniqueId: string;
+	orderNumber: number;
 }
 
 export interface IOrder extends Order {
-	uniqueId: string;
 	state: string;
-	orderNumber: number;
 	assignedTo: string;
 }
 
 export interface IOrderDocument extends IOrder, Document {}
 
 const orderSchemaFields: Record<keyof IOrder, any> = {
+	createdBy: {
+		type: Types.ObjectId,
+		required: true,
+	},
 	number: {
 		type: Number,
 		required: true,
@@ -47,15 +52,10 @@ const orderSchemaFields: Record<keyof IOrder, any> = {
 	state: {
 		type: String,
 		default: 'PENDING',
-		validate(data: string) {
-			if (data !== 'PENDING' && data !== 'FINISHED')
-				throw new Error(`Unsupported Order state ${data} used.`);
-		},
 	},
 	orderNumber: {
 		type: Number,
 		required: true,
-		unique: true,
 	},
 	services: [
 		{
@@ -69,7 +69,7 @@ const orderSchemaFields: Record<keyof IOrder, any> = {
 	message: {
 		type: String,
 		required: true,
-		maxlength: 1000,
+		maxlength: 2000,
 		minlength: 2,
 		trim: true,
 	},

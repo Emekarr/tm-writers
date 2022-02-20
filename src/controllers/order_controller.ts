@@ -1,50 +1,42 @@
-import { v4 } from 'uuid';
-import { isValidObjectId } from 'mongoose';
-
 import { Request, Response, NextFunction } from 'express';
-import { IOrderDocument } from '../db/models/order';
 
-import OrderRepository from '../db/mongodb/order_repository';
+import OrderRepository from '../repository/mongodb/order_repository';
 
-// services
-import QueryService from '../services/query_service';
-import CustomError from '../utils/error';
-import ServerResponseBuilder from '../utils/response';
+// usecases
+import CreateNewOrderUseCase from '../usecases/order/CreateNewOrderUseCase';
+import DeleteOrderUseCase from '../usecases/order/DeleteOrderUseCase';
+import AssignOrderUseCase from '../usecases/order/AssignOrderUseCase';
 
-class OrderController {
-	async createOrder(req: Request, res: Response, next: NextFunction) {
+// utils
+import ServerResponse from '../utils/response';
+import validate_body from '../utils/validate_body';
+
+export default abstract class OrderController {
+	static async createOrder(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { services, message, timeline, number, name } = req.body;
-			QueryService.checkIfNull([services, message, timeline, name, number]);
-			const orderNumber = (await OrderRepository.findLast())
-				? ((await OrderRepository.findLast()) as IOrderDocument).orderNumber + 1
-				: 1;
-			const order = await OrderRepository.createEntry({
-				services,
-				message,
-				timeline,
-				number,
-				orderNumber,
-				uniqueId: v4(),
-				name,
-			});
-			if (!order) throw new CustomError('Order failed to create', 400);
-			new ServerResponseBuilder('Order creation successful')
-				.data(order)
-				.respond(res);
+			const orderData = req.body;
+			orderData.createdBy = req.id;
+			const order = await CreateNewOrderUseCase.execute(orderData);
+			if (!order || typeof order === 'string')
+				return new ServerResponse(order || 'Order creation faied')
+					.statusCode(400)
+					.success(false)
+					.respond(res);
+			new ServerResponse('Order creation successful').data(order).respond(res);
 		} catch (err) {
 			next(err);
 		}
 	}
 
-	async getOrders(req: Request, res: Response, next: NextFunction) {
+	static async getOrders(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { limit, page } = req.query;
-			const orders = await OrderRepository.findAll(
+			const orders = await OrderRepository.findManyByFields(
+				{ createdBy: req.id },
 				{ limit: Number(limit), page: Number(page) },
 				['assignedTo'],
 			);
-			new ServerResponseBuilder('Order retrieved successfully')
+			new ServerResponse('Order retrieved successfully')
 				.data(orders)
 				.respond(res);
 		} catch (err) {
@@ -52,34 +44,69 @@ class OrderController {
 		}
 	}
 
-	async deleteOrder(req: Request, res: Response, next: NextFunction) {
+	static async getAllOrders(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { id } = req.query;
-			QueryService.checkIfNull([id]);
-			if (!isValidObjectId(id as string))
-				throw new CustomError('Please pass in a valid objectId', 400);
-			const deleted = await OrderRepository.deleteById(id as string);
-			if (!deleted) throw new CustomError('Failed to delete order', 400);
-			new ServerResponseBuilder('Order deleted successfully').respond(res);
+			const { limit, page } = req.query;
+			const orders = await OrderRepository.findAll(
+				{ limit: Number(limit), page: Number(page) },
+				['assignedTo'],
+			);
+			new ServerResponse('Order retrieved successfully')
+				.data(orders)
+				.respond(res);
 		} catch (err) {
 			next(err);
 		}
 	}
 
-	async assignOrder(req: Request, res: Response, next: NextFunction) {
+	static async deleteOrder(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { id } = req.query;
+			const invalid = validate_body([id]);
+			if (invalid)
+				return new ServerResponse(invalid || 'please pass in an order id')
+					.statusCode(400)
+					.success(false)
+					.respond(res);
+			const deleted = await DeleteOrderUseCase.execute(id as string);
+			if (!deleted || typeof deleted == 'string')
+				return new ServerResponse(deleted || 'please pass in an order id')
+					.statusCode(400)
+					.success(false)
+					.respond(res);
+			new ServerResponse('Order deleted successfully').respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async assignOrder(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { orderId, writerId } = req.body;
-			QueryService.checkIfNull([orderId, writerId]);
-			const assigned = await OrderRepository.updateById(orderId, {
-				assignedTo: writerId,
-			});
-			if (!assigned)
-				throw new CustomError('Failed to assign order to writer', 400);
-			new ServerResponseBuilder('Order successfully assigned').respond(res);
+			const invalid = validate_body([orderId, writerId]);
+			if (invalid)
+				return new ServerResponse(
+					invalid || 'please pass in an order and writer id',
+				)
+					.statusCode(400)
+					.success(false)
+					.respond(res);
+			const assigned = await AssignOrderUseCase.execute(
+				{
+					assignedTo: writerId,
+				},
+				orderId,
+			);
+			if (!assigned || typeof assigned === 'string')
+				return new ServerResponse(
+					assigned || 'something went wrong while assigning writer',
+				)
+					.statusCode(400)
+					.success(false)
+					.respond(res);
+			new ServerResponse('Order successfully assigned').respond(res);
 		} catch (err) {
 			next(err);
 		}
 	}
 }
-
-export default Object.freeze(new OrderController());

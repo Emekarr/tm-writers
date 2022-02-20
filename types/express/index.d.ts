@@ -4,3 +4,7 @@ declare namespace Express {
 		account: string;
 	}
 }
+
+declare module '@pixul/joi-country';
+
+declare module 'generate-unique-id';

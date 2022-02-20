@@ -1,143 +1,190 @@
-import { Request, Response, NextFunction } from 'express';
-
-// services
-import WriterService from '../services/writer_service';
-import QueryService from '../services/query_service';
-import TokenService from '../services/token_service';
-
-// models
-import { IWriter, Writer, IWriterDocument } from '../db/models/mongodb/writer';
+import { Response, Request, NextFunction } from 'express';
 
 // utils
-import CustomError from '../utils/error';
+import generate_otp from '../utils/generate_otp';
 import ServerResponse from '../utils/response';
-import RedisService from '../services/redis_service';
+import { hashData } from '../utils/hash';
+import validate_body from '../utils/validate_body';
 
-class WriterController {
-	sign_up_writer = async (req: Request, res: Response, next: NextFunction) => {
+// models
+import { IWriter } from '../db/models/mongodb/writer';
+
+// usecases
+import CacheOtpUseCase from '../usecases/otp/CacheOtpUseCase';
+import CacheWriterUseCase from '../usecases/writers/CacheWriterUseCase';
+import CreateNewWriterUseCase from '../usecases/writers/CreateNewWriterUseCase';
+import CreateAuthTokenUseCase from '../usecases/authentication/CreateAuthTokensUseCase';
+import LoginWriterUseCase from '../usecases/writers/LoginWriterUseCase';
+import VerifyOtpUseCase from '../usecases/otp/VerifyOtpUseCase';
+
+// messaging
+import EmailMesssenger from '../messaging/email_messenger';
+
+// repository
+import RedisRepository from '../repository/redis/redis_repository';
+import writer_repository from '../repository/mongodb/writer_repository';
+
+export default abstract class WriterController {
+	static async createWriter(req: Request, res: Response, next: NextFunction) {
 		try {
-			const {
-				email,
-				password,
-				lastname,
-				firstname,
-				username,
-				country,
-				mobile,
-				address,
-				nearest_landmark,
-				highest_qualificaiton,
-				experience,
-				academic_work,
-				strength,
-				weakness,
-			} = req.body;
-			QueryService.checkIfNull([
-				email,
-				password,
-				lastname,
-				firstname,
-				username,
-				country,
-				mobile,
-				address,
-				nearest_landmark,
-				highest_qualificaiton,
-				experience,
-				academic_work,
-				strength,
-				weakness,
-			]);
-			const writer_data: Writer = {
-				email,
-				password,
-				lastname,
-				firstname,
-				username,
-				country,
-				mobile,
-				address,
-				nearest_landmark,
-				highest_qualificaiton,
-				experience,
-				academic_work,
-				strength,
-				weakness,
-			};
-			const writerWithEmail = await WriterService.findByEmail(
-				writer_data.email!,
-			);
-			if (writerWithEmail)
-				return new ServerResponse('writer with email already exist')
+			const writer = req.body;
+			const created_writer = await CacheWriterUseCase.execute(writer);
+			if (typeof created_writer === 'string')
+				return new ServerResponse(created_writer)
 					.statusCode(400)
 					.success(false)
 					.respond(res);
-			const writerWithusername = await WriterService.findByUsername(
-				writer_data.username!,
-			);
-			if (writerWithusername)
-				return new ServerResponse('writer with username already exist')
+			const code = generate_otp();
+			const saved = await CacheOtpUseCase.execute({
+				code: await hashData(code),
+				contact: writer.email,
+			});
+			console.log('saved', saved);
+			if (!saved)
+				return new ServerResponse('Otp sending failed')
 					.statusCode(400)
 					.success(false)
 					.respond(res);
-			const success = await RedisService.cacheWriter(writer_data);
-			if (!success)
-				throw new CustomError('something went wrong while saving writer', 400);
-			new ServerResponse('Writer created successfully').respond(res);
+			if (process.env.NODE_ENV === 'PROD') {
+				await EmailMesssenger.send(
+					writer.email,
+					`This email is being used to create an account on TDM Writers\n ${code} is your otp`,
+					'Welcome to TDM Writers',
+				);
+			} else if (process.env.NODE_ENV === 'DEV') {
+				return new ServerResponse('writer created and Otp sent successfully')
+					.data({ code })
+					.respond(res);
+			}
+			new ServerResponse('writer created and Otp sent successfully').respond(
+				res,
+			);
 		} catch (err) {
 			next(err);
 		}
-	};
+	}
 
-	login = async (req: Request, res: Response, next: NextFunction) => {
+	static async verifyAccount(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { account, password } = req.body;
-			QueryService.checkIfNull([account, password]);
-			const email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-			let writer: IWriterDocument | null;
-			if (email_regex.test(account)) {
-				writer = await WriterService.loginWriterWithEmail(account, password);
-			} else {
-				writer = await WriterService.loginWriterWithUsername(account, password);
-			}
-			if (!writer)
-				return new ServerResponse('Login attempt failed')
+			const { code, email } = req.body;
+			const account = await RedisRepository.findOne(`${email}-writer`);
+			if (!account)
+				return new ServerResponse('writer does not exist')
+					.statusCode(404)
+					.success(false)
+					.respond(res);
+			const result = await VerifyOtpUseCase.execute(`${email}-otp`, code);
+			if (!result)
+				return new ServerResponse('Otp does not match. Please try again')
 					.success(false)
 					.statusCode(400)
 					.respond(res);
-			const { newAccessToken, newRefreshToken } =
-				await TokenService.generateToken(
-					req.socket.remoteAddress!,
-					writer!._id,
-				);
-			if (!newAccessToken || !newRefreshToken)
-				throw new Error('tokens could not be generated');
-			res.cookie('ACCESS_TOKEN', newAccessToken.token, {
+			await RedisRepository.deleteOne(`${email}-otp`);
+			const writer = await RedisRepository.findOne(`${email}-writer`);
+			if (!writer)
+				return new ServerResponse('Otp has expired.')
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			(writer as any).verified_email = true;
+			const created_writer = await CreateNewWriterUseCase.execute(
+				writer as any,
+			);
+			if (typeof created_writer === 'string' || !created_writer)
+				return new ServerResponse(
+					created_writer || 'Something went wrong while creating writer',
+				)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			await RedisRepository.deleteOne(`${email}-writer`);
+			const tokens = await CreateAuthTokenUseCase.execute(
+				req.ip,
+				created_writer._id.toString(),
+				'writer',
+			);
+			if (typeof tokens === 'string' || !tokens)
+				return new ServerResponse(
+					tokens || 'Something went wrong while generating tokens',
+				)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			res.cookie('ACCESS_TOKEN', tokens.newAccessToken.token, {
 				httpOnly: true,
 				maxAge: parseInt(process.env.ACCESS_TOKEN_LIFE as string, 10),
 			});
-			res.cookie('REFRESH_TOKEN', newRefreshToken.token, {
+			res.cookie('REFRESH_TOKEN', tokens.newRefreshToken.token, {
 				httpOnly: true,
 				maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
 			});
-			new ServerResponse('Login attepmt successful').data(writer).respond(res);
+			new ServerResponse('Email verified and writer saved')
+				.data({ writer: created_writer })
+				.statusCode(201)
+				.respond(res);
 		} catch (err) {
 			next(err);
 		}
-	};
+	}
 
-	getWriter = async (req: Request, res: Response, next: NextFunction) => {
+	static async loginWriter(req: Request, res: Response, next: NextFunction) {
+		try {
+			const loginInfo = req.body;
+			const invalid = validate_body([loginInfo.email, loginInfo.password]);
+			if (invalid)
+				return new ServerResponse(invalid)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			const writer = await LoginWriterUseCase.execute(loginInfo);
+			if (typeof writer === 'string' || !writer)
+				return new ServerResponse(
+					writer || 'Something went wrong while trying to sign you in',
+				)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			const tokens = await CreateAuthTokenUseCase.execute(
+				req.ip,
+				writer._id.toString(),
+				'writer',
+			);
+			if (typeof tokens === 'string' || !tokens)
+				return new ServerResponse(
+					tokens || 'Something went wrong while generating tokens',
+				)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			res.cookie('ACCESS_TOKEN', tokens.newAccessToken.token, {
+				httpOnly: true,
+				maxAge: parseInt(process.env.ACCESS_TOKEN_LIFE as string, 10),
+			});
+			res.cookie('REFRESH_TOKEN', tokens.newRefreshToken.token, {
+				httpOnly: true,
+				maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
+			});
+			new ServerResponse('Login successful').data(writer).respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async getWriter(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { id } = req.query;
-			QueryService.checkIfNull([id]);
-			const writer = await WriterService.findById(id as string);
+			const invalid = validate_body([id]);
+			if (invalid)
+				return new ServerResponse(invalid)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			const writer = await writer_repository.findById(id as string);
 			if (!writer)
-				return new ServerResponse('Writer not found').data({}).respond(res);
-			new ServerResponse('Writer found.').data(writer).respond(res);
+				return new ServerResponse('writer not found').data({}).respond(res);
+			new ServerResponse('writer found.').data(writer).respond(res);
 		} catch (err) {
 			next(err);
 		}
-	};
+	}
 }
-
-export default new WriterController();

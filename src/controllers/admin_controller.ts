@@ -1,38 +1,51 @@
 import { Request, Response, NextFunction } from 'express';
 
-import QueryService from '../services/query_service';
-import TokenService from '../services/token_service';
+import LoginAdminUseCase from '../usecases/admin/LoginAdminUseCase';
+import CreateAuthTokenUseCase from '../usecases/authentication/CreateAuthTokensUseCase';
 
-import AdminService from '../services/admin_service';
-
-import ServerResponseBuilder from '../utils/response';
+// utils
+import validate_body from '../utils/validate_body';
+import ServerResponse from '../utils/response';
 
 class AdminController {
 	login = async (req: Request, res: Response, next: NextFunction) => {
 		try {
-			const { password } = req.body;
-			QueryService.checkIfNull([password]);
-			let admin = await AdminService.loginAdmin(password);
-			if (!admin)
-				return new ServerResponseBuilder('Login attempt failed')
+			const loginInfo = req.body;
+			const invalid = validate_body([loginInfo.email, loginInfo.password]);
+			if (invalid)
+				return new ServerResponse(invalid)
 					.success(false)
 					.statusCode(400)
 					.respond(res);
-			const { newAccessToken, newRefreshToken } =
-				await TokenService.generateToken(req.socket.remoteAddress!, admin!._id);
-			if (!newAccessToken || !newRefreshToken)
-				throw new Error('tokens could not be generated');
-			res.cookie('ACCESS_TOKEN', newAccessToken.token, {
+			const admin = await LoginAdminUseCase.execute(loginInfo);
+			if (typeof admin === 'string' || !admin)
+				return new ServerResponse(
+					admin || 'Something went wrong while trying to sign you in',
+				)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			const tokens = await CreateAuthTokenUseCase.execute(
+				req.ip,
+				admin._id.toString(),
+				'admin',
+			);
+			if (typeof tokens === 'string' || !tokens)
+				return new ServerResponse(
+					tokens || 'Something went wrong while generating tokens',
+				)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			res.cookie('ACCESS_TOKEN', tokens.newAccessToken.token, {
 				httpOnly: true,
 				maxAge: parseInt(process.env.ACCESS_TOKEN_LIFE as string, 10),
 			});
-			res.cookie('REFRESH_TOKEN', newRefreshToken.token, {
+			res.cookie('REFRESH_TOKEN', tokens.newRefreshToken.token, {
 				httpOnly: true,
 				maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
 			});
-			new ServerResponseBuilder('Login attepmt successful')
-				.data(admin)
-				.respond(res);
+			new ServerResponse('Login successful').data(admin).respond(res);
 		} catch (err) {
 			next(err);
 		}

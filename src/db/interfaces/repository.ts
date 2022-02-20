@@ -21,6 +21,7 @@ export default interface Repository {
 		populateKeys?: string[],
 		...args: any[]
 	): Promise<any[]>;
+	findLast(filter: object): Promise<any>;
 	// update data
 	updateById(id: string, payload: object, ...args: any[]): Promise<any>;
 	updateByIdAndReturn(

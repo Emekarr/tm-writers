@@ -5,11 +5,11 @@ export default async () => {
 	const admin = await AdminRepository.findAll();
 	if (admin.length === 0) {
 		await AdminRepository.createEntry({
-			username: 'admin',
-			email: process.env.OUNJE_EMAIL,
+			name: 'admin',
+			email: process.env.TDM_EMAIL,
 			firstname: 'admin',
 			lastname: 'admin',
-			password: process.env.OUNJE_PASSWORD,
+			password: process.env.TDM_PASSWORD,
 		});
 	}
 };

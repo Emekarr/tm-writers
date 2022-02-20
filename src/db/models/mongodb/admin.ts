@@ -1,15 +1,12 @@
 import { Document, model, Schema } from 'mongoose';
-import { hash } from 'bcrypt';
-
-import CustomError from '../../../utils/error';
+import { hashData } from '../../../utils/hash';
 
 export interface Admin {
 	name: string;
 	email: string;
 	firstname: string;
 	lastname: string;
-	password?: string;
-	phoneNumber: string;
+	password: string;
 }
 
 export interface IAdminDocument extends Admin, Document {}
@@ -28,11 +25,6 @@ const adminSchemaFields: Record<keyof Admin, any> = {
 		maxlength: 100,
 		trim: true,
 		unique: true,
-		validate(data: string) {
-			const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-			if (!regex.test(data))
-				throw new CustomError('invalid email provided', 400);
-		},
 	},
 	firstname: {
 		type: String,
@@ -51,18 +43,6 @@ const adminSchemaFields: Record<keyof Admin, any> = {
 	password: {
 		type: String,
 		required: true,
-		validate(data: string) {
-			const regex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-			if (!regex.test(data))
-				throw new CustomError('invalid password provided', 400);
-		},
-	},
-	phoneNumber: {
-		type: String,
-		required: true,
-		trim: true,
-		maxlength: 13,
-		minlength: 1,
 	},
 };
 
@@ -77,13 +57,13 @@ const AdminSchema = new Schema(adminSchemaFields, {
 
 AdminSchema.pre('save', async function (this: IAdminDocument, next) {
 	if (this.isModified('password')) {
-		this.password = await hash(this.password!, 10);
+		this.password = await hashData(this.password!);
 	}
 	next();
 });
 
 AdminSchema.method('toJSON', function (this: IAdminDocument) {
-	const admin = this.toObject();
+	const admin = this.toObject() as Partial<IAdminDocument>;
 	delete admin.__v;
 	delete admin.password;
 	return admin;

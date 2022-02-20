@@ -2,15 +2,15 @@ import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
 // utils
-import ServerResponse from '../utils/response';
-import { verifyData } from '../utils/token_generation';
+import ServerResponse from '../../utils/response';
+import { verifyData } from '../../utils/token_generation';
 
 // usecases
-import redis_repository from '../repository/redis/redis_repository';
-import AccessToken from '../db/models/redis/access_tokens';
+import redis_repository from '../../repository/redis/redis_repository';
+import AccessToken from '../../db/models/redis/access_tokens';
 
 // authentication
-import Authentication from '../authentication/auth';
+import Authentication from '../../authentication/auth';
 
 const generateFromRefresh = async (refreshToken: string, ipAddress: string) => {
 	const refreshDecoded = verifyData(

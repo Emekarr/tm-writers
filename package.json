@@ -12,6 +12,7 @@
 	"license": "MIT",
 	"devDependencies": {
 		"@types/bcrypt": "^5.0.0",
+		"@types/cors": "^2.8.12",
 		"@types/express": "^4.17.13",
 		"@types/jsonwebtoken": "^8.5.5",
 		"@types/mongoose": "^5.11.97",
@@ -23,12 +24,18 @@
 		"ts-node": "^10.2.1"
 	},
 	"dependencies": {
+		"@pixul/joi-country": "^1.0.0",
 		"@sendgrid/mail": "^7.6.0",
+		"@types/joi-phone-number": "^5.0.3",
 		"@vonage/server-sdk": "^2.10.10",
 		"bcrypt": "^5.0.1",
 		"cookie-parser": "^1.4.5",
 		"cors": "^2.8.5",
 		"express": "^4.17.1",
+		"generate-unique-id": "^2.0.1",
+		"joi": "^17.6.0",
+		"joi-password-complexity": "^5.1.0",
+		"joi-phone-number": "^5.1.0",
 		"jsonwebtoken": "^8.5.1",
 		"mongoose": "^6.0.13",
 		"redis": "^4.0.0",

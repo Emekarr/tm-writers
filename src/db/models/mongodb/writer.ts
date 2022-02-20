@@ -1,33 +1,28 @@
 import { Schema, model, Document } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-import CustomError from '../../../utils/error';
-import countries from '../../../utils/countries';
-import qualification from '../../../utils/qualifications';
-
 export interface Writer {
-	username?: string;
-	firstname?: string;
-	lastname?: string;
-	email?: string;
-	password?: string;
-	country?: string;
+	username: string;
+	firstname: string;
+	lastname: string;
+	email: string;
+	password: string;
+	country: string;
 	mobile?: string;
-	address?: string;
-	nearest_landmark?: string;
-	highest_qualificaiton?: string;
-	experience?: number;
-	academic_work?: Buffer;
-	strength?: string[];
-	weakness?: string[];
+	address: string;
+	nearest_landmark: string;
+	highest_qualificaiton: string;
+	experience: number;
+	academic_work: string;
+	strength: string[];
+	weakness: string[];
 }
 
 export interface IWriter extends Writer {
-	profile_image?: Buffer;
-	verified_email?: boolean;
-	verified_mobile?: boolean;
-	recovery_otp?: number;
-	approved_writer?: boolean;
+	profile_image: Buffer;
+	verified_email: boolean;
+	verified_mobile: boolean;
+	approved_writer: boolean;
 }
 
 export interface IWriterDocument extends IWriter, Document {
@@ -38,7 +33,7 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 	username: {
 		type: String,
 		required: true,
-		maxlength: 15,
+		maxlength: 30,
 		minlength: 2,
 		trim: true,
 		unique: true,
@@ -46,14 +41,14 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 	firstname: {
 		type: String,
 		required: true,
-		maxlength: 15,
+		maxlength: 30,
 		minlength: 2,
 		trim: true,
 	},
 	lastname: {
 		type: String,
 		required: true,
-		maxlength: 15,
+		maxlength: 30,
 		minlength: 2,
 		trim: true,
 	},
@@ -63,17 +58,11 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 		maxlength: 100,
 		trim: true,
 		unique: true,
-		validate(data: string) {
-			const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-			if (!regex.test(data))
-				throw new CustomError('invalid email provided', 400);
-		},
 	},
 	strength: [
 		{
 			type: String,
-			required: true,
-			maxlength: 15,
+			maxlength: 30,
 			minlength: 2,
 			trim: true,
 		},
@@ -81,19 +70,16 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 	weakness: [
 		{
 			type: String,
-			required: true,
-			maxlength: 15,
+			maxlength: 30,
 			minlength: 2,
 			trim: true,
 		},
 	],
 	mobile: {
 		type: String,
-		required: true,
 		maxlength: 20,
 		minlength: 9,
 		trim: true,
-		unique: true,
 	},
 	approved_writer: {
 		type: Boolean,
@@ -110,10 +96,6 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 		type: String,
 		required: true,
 		trim: true,
-		validate(data: string) {
-			if (!qualification.includes(data))
-				throw new CustomError('unsupported degree added', 400);
-		},
 	},
 	experience: {
 		type: Number,
@@ -121,8 +103,8 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 		trim: true,
 	},
 	academic_work: {
-		type: Buffer,
-		// required: true,
+		type: String,
+		required: true,
 	},
 	nearest_landmark: {
 		type: String,
@@ -137,13 +119,9 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 		maxlength: 20,
 		minlength: 2,
 		trim: true,
-		validate(data: string) {
-			if (!countries.includes(data))
-				throw new CustomError('unrecognised country added', 400);
-		},
 	},
 	profile_image: {
-		type: Buffer,
+		type: String,
 		default: null,
 	},
 	verified_email: {
@@ -154,15 +132,9 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 		type: Boolean,
 		default: false,
 	},
-	recovery_otp: Number,
 	password: {
 		type: String,
 		required: true,
-		validate(data: string) {
-			const regex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-			if (!regex.test(data))
-				throw new CustomError('invalid password provided', 400);
-		},
 	},
 };
 
@@ -176,7 +148,7 @@ WriterSchema.pre('save', async function (this: IWriterDocument, next) {
 });
 
 WriterSchema.method('toJSON', function (this: IWriterDocument) {
-	const writer = this.toObject();
+	const writer = this.toObject() as Partial<IWriterDocument>;
 	delete writer.__v;
 	delete writer.password;
 	return writer;

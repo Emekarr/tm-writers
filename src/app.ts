@@ -1,5 +1,7 @@
 import express, { Application, Response, Request } from 'express';
 
+import cors from 'cors';
+
 // utils
 import ServerResponse from './utils/response';
 
@@ -9,20 +11,16 @@ import error_middleware from './middleware/error_middleware';
 // routes
 import router from './routes';
 
-// connect to databases
-import('./db/mongodb/connect');
-import('./repository/redis/connect').then((redisConnection) => {
-	redisConnection.default.connectToRedis();
-});
-
-// create admin when server starts
-import('./utils/seeder');
+// start ups
+import('./startups/index').then((startup) => startup.default());
 
 class App {
 	private express: Application;
 
 	constructor() {
 		this.express = express();
+
+		this.express.use(cors());
 
 		this.express.use(express.json());
 		this.express.use(express.urlencoded({ extended: true }));

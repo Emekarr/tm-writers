@@ -78,9 +78,12 @@ export default abstract class MongoDbRepository implements Repository {
 		return result;
 	}
 
-	async findLast(): Promise<Document<any> | null> {
+	async findLast(filter: object): Promise<Document<any> | null> {
 		return (
-			(await this.model.find().sort({ _id: -1 }).limit(1)) as Document<any>[]
+			(await this.model
+				.find(this.__cleanFilterOptions(filter))
+				.sort({ _id: -1 })
+				.limit(1)) as Document<any>[]
 		)[0];
 	}
 
@@ -237,14 +240,14 @@ export default abstract class MongoDbRepository implements Repository {
 		return message;
 	}
 
-	async deleteById(id: string): Promise<boolean> {
-		let success!: boolean;
+	async deleteById(id: string): Promise<string | boolean> {
+		let success!: string | boolean;
 		try {
 			const deletedDoc = await this.model.findByIdAndDelete(id);
 			if (!deletedDoc) throw new Error('Document not found');
 			success = true;
-		} catch (err) {
-			success = false;
+		} catch (err: any) {
+			success = err.message;
 		}
 		return success;
 	}
