@@ -230,9 +230,7 @@ export default abstract class MongoDbRepository implements Repository {
 	async deleteMany(filter: object): Promise<string | boolean> {
 		let message: string | boolean;
 		try {
-			await this.model.deleteMany(filter, {}, (err) => {
-				if (err) throw new Error(err.message);
-			});
+			await this.model.deleteMany(filter, {});
 			message = true;
 		} catch (err: any) {
 			message = err.message;

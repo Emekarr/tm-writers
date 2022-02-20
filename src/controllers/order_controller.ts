@@ -61,14 +61,14 @@ export default abstract class OrderController {
 
 	static async deleteOrder(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { id } = req.query;
-			const invalid = validate_body([id]);
+			const ids = req.body;
+			const invalid = validate_body(ids);
 			if (invalid)
 				return new ServerResponse(invalid || 'please pass in an order id')
 					.statusCode(400)
 					.success(false)
 					.respond(res);
-			const deleted = await DeleteOrderUseCase.execute(id as string);
+			const deleted = await DeleteOrderUseCase.execute(ids);
 			if (!deleted || typeof deleted == 'string')
 				return new ServerResponse(deleted || 'please pass in an order id')
 					.statusCode(400)
