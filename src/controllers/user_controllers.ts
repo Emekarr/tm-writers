@@ -114,7 +114,11 @@ export default abstract class UserController {
 				maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
 			});
 			new ServerResponse('Email verified and user saved')
-				.data({ user: created_user })
+				.data({
+					user: created_user,
+					ACCESS_TOKEN: tokens.newAccessToken.token,
+					REFRESH_TOKEKN: tokens.newRefreshToken.token,
+				})
 				.statusCode(201)
 				.respond(res);
 		} catch (err) {
@@ -159,7 +163,13 @@ export default abstract class UserController {
 				httpOnly: true,
 				maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
 			});
-			new ServerResponse('Login successful').data(user).respond(res);
+			new ServerResponse('Login successful')
+				.data({
+					user,
+					ACCESS_TOKEN: tokens.newAccessToken.token,
+					REFRESH_TOKEKN: tokens.newRefreshToken.token,
+				})
+				.respond(res);
 		} catch (err) {
 			next(err);
 		}

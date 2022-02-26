@@ -11,7 +11,7 @@ router.post('/signup', WriterController.createWriter);
 
 router.post('/verify-account', WriterController.verifyAccount);
 
-router.put('/login', WriterController.loginWriter);
+router.post('/login', WriterController.loginWriter);
 
 router.get(
 	'/profile',

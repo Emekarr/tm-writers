@@ -4,6 +4,6 @@ import AdminController from '../../controllers/admin_controller';
 
 const router = Router();
 
-router.put('/login', AdminController.login);
+router.post('/login', AdminController.login);
 
 export default router;

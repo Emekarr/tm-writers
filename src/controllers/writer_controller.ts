@@ -119,7 +119,11 @@ export default abstract class WriterController {
 				maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
 			});
 			new ServerResponse('Email verified and writer saved')
-				.data({ writer: created_writer })
+				.data({
+					writer: created_writer,
+					ACCESS_TOKEN: tokens.newAccessToken.token,
+					REFRESH_TOKEKN: tokens.newRefreshToken.token,
+				})
 				.statusCode(201)
 				.respond(res);
 		} catch (err) {
@@ -164,7 +168,13 @@ export default abstract class WriterController {
 				httpOnly: true,
 				maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
 			});
-			new ServerResponse('Login successful').data(writer).respond(res);
+			new ServerResponse('Login successful')
+				.data({
+					writer,
+					ACCESS_TOKEN: tokens.newAccessToken.token,
+					REFRESH_TOKEKN: tokens.newRefreshToken.token,
+				})
+				.respond(res);
 		} catch (err) {
 			next(err);
 		}
