@@ -11,7 +11,7 @@ export interface Writer {
 	mobile?: string;
 	address: string;
 	nearest_landmark: string;
-	highest_qualificaiton: string;
+	highest_qualification: string;
 	experience: number;
 	academic_work: string;
 	strength: string[];
@@ -84,7 +84,7 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 		minlength: 10,
 		trim: true,
 	},
-	highest_qualificaiton: {
+	highest_qualification: {
 		type: String,
 		required: true,
 		trim: true,

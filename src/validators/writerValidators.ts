@@ -27,7 +27,7 @@ export const validateCreateNewWriter = (data: Writer) =>
 		profile_image: Joi.string().uri(),
 		address: Joi.string().max(100).min(10).required(),
 		nearest_landmark: Joi.string().max(50).min(2).required(),
-		highest_qualificaiton: Joi.string()
+		highest_qualification: Joi.string()
 			.valid('high school diploma', 'MSc', 'BSc', 'Masters', 'Doctorate')
 
 			.required(),
@@ -58,7 +58,7 @@ export const validateUpdateWriter = (data: Writer) =>
 		profile_image: Joi.string().uri(),
 		address: Joi.string().max(100).min(10),
 		nearest_landmark: Joi.string().max(50).min(2),
-		highest_qualificaiton: Joi.string().valid(
+		highest_qualification: Joi.string().valid(
 			'high school diploma',
 			'MSc',
 			'BSc',
