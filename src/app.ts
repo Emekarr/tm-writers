@@ -19,10 +19,11 @@ class App {
 
 	constructor() {
 		this.express = express();
-		
+
 		this.express.use(
 			cors({
 				origin: 'http://localhost:3000',
+				credentials: true,
 			}),
 		);
 
