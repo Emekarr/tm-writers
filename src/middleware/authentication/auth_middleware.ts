@@ -48,8 +48,8 @@ const generateFromRefresh = async (refreshToken: string, ipAddress: string) => {
 
 export default async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const accessTokenHeader = req.headers.authorizationaccesstoken as string;
-		const refreshTokenHeader = req.headers.authorizationrefreshtoken as string;
+		const accessTokenHeader = req.cookies.authorizationaccesstoken as string;
+		const refreshTokenHeader = req.cookies.authorizationrefreshtoken as string;
 		if (!refreshTokenHeader || refreshTokenHeader === ' ')
 			return new ServerResponse('Tokens not provided')
 				.statusCode(400)
