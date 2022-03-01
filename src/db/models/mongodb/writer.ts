@@ -3,7 +3,6 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 import bcrypt from 'bcrypt';
 
 export interface Writer {
-	username: string;
 	firstname: string;
 	lastname: string;
 	email: string;
@@ -31,14 +30,6 @@ export interface IWriterDocument extends IWriter, Document {
 }
 
 const writer_schema_fields: Record<keyof IWriter, any> = {
-	username: {
-		type: String,
-		required: true,
-		maxlength: 30,
-		minlength: 2,
-		trim: true,
-		unique: true,
-	},
 	firstname: {
 		type: String,
 		required: true,

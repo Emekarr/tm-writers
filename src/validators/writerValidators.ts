@@ -8,7 +8,6 @@ const Joi = BaseJoi.extend(JoiCountry, JoiMobile);
 
 export const validateCreateNewWriter = (data: Writer) =>
 	Joi.object({
-		username: Joi.string().max(30).min(2).required(),
 		firstname: Joi.string().max(30).min(2).required(),
 		lastname: Joi.string().max(30).min(2).required(),
 		email: Joi.string().email().required(),
@@ -36,12 +35,10 @@ export const validateCreateNewWriter = (data: Writer) =>
 		academic_work: Joi.string().uri().required(),
 		strength: Joi.array().items(Joi.string()),
 		weakness: Joi.array().items(Joi.string()),
-		verified_email: Joi.boolean(),
 	}).validate(data) as ValidationResult;
 
 export const validateUpdateWriter = (data: Writer) =>
 	Joi.object({
-		username: Joi.string().max(30).min(2),
 		firstname: Joi.string().max(30).min(2),
 		lastname: Joi.string().max(30).min(2),
 		email: Joi.string().email(),
