@@ -35,6 +35,7 @@ export const validateCreateNewWriter = (data: Writer) =>
 		academic_work: Joi.string().uri().required(),
 		strength: Joi.array().items(Joi.string()),
 		weakness: Joi.array().items(Joi.string()),
+		verified_email: Joi.boolean(),
 	}).validate(data) as ValidationResult;
 
 export const validateUpdateWriter = (data: Writer) =>
