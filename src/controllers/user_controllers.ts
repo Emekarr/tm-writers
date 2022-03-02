@@ -106,11 +106,9 @@ export default abstract class UserController {
 					.statusCode(400)
 					.respond(res);
 			res.cookie('ACCESS_TOKEN', tokens.newAccessToken.token, {
-				httpOnly: true,
 				maxAge: parseInt(process.env.ACCESS_TOKEN_LIFE as string, 10),
 			});
 			res.cookie('REFRESH_TOKEN', tokens.newRefreshToken.token, {
-				httpOnly: true,
 				maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
 			});
 			new ServerResponse('Email verified and user saved')
@@ -156,11 +154,9 @@ export default abstract class UserController {
 					.statusCode(400)
 					.respond(res);
 			res.cookie('ACCESS_TOKEN', tokens.newAccessToken.token, {
-				httpOnly: true,
 				maxAge: parseInt(process.env.ACCESS_TOKEN_LIFE as string, 10),
 			});
 			res.cookie('REFRESH_TOKEN', tokens.newRefreshToken.token, {
-				httpOnly: true,
 				maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
 			});
 			new ServerResponse('Login successful')

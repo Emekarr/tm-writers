@@ -2,6 +2,8 @@ import express, { Application, Response, Request } from 'express';
 
 import cors from 'cors';
 
+import cookie_parser from 'cookie-parser';
+
 // utils
 import ServerResponse from './utils/response';
 
@@ -26,6 +28,8 @@ class App {
 				credentials: true,
 			}),
 		);
+
+		this.express.use(cookie_parser());
 
 		this.express.use(express.json());
 		this.express.use(express.urlencoded({ extended: true }));
