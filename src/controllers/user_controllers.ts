@@ -178,7 +178,6 @@ export default abstract class UserController {
 		next: NextFunction,
 	) {
 		try {
-		} catch (err) {
 			const passwordInfo = req.body;
 			const invalid = validate_body([
 				passwordInfo.new_password,
@@ -202,6 +201,7 @@ export default abstract class UserController {
 					.statusCode(400)
 					.respond(res);
 			new ServerResponse('Password Updated successfully').respond(res);
+		} catch (err) {
 			next(err);
 		}
 	}
