@@ -16,6 +16,7 @@ import CreateUserUseCase from '../usecases/users/CreateNewUserUseCase';
 import CreateAuthTokenUseCase from '../usecases/authentication/CreateAuthTokensUseCase';
 import LoginUserUseCase from '../usecases/users/LoginUserUseCase';
 import VerifyOtpUseCase from '../usecases/otp/VerifyOtpUseCase';
+import UpdatePasswordUserUseCase from '../usecases/users/UpdateUserPasswordUseCase';
 
 // messaging
 import EmailMesssenger from '../messaging/email_messenger';
@@ -167,6 +168,40 @@ export default abstract class UserController {
 				})
 				.respond(res);
 		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async updateUserPassword(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	) {
+		try {
+		} catch (err) {
+			const passwordInfo = req.body;
+			const invalid = validate_body([
+				passwordInfo.new_password,
+				passwordInfo.old_password,
+			]);
+			if (invalid)
+				return new ServerResponse(invalid)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			const user = await UpdatePasswordUserUseCase.execute({
+				id: req.id,
+				password: passwordInfo.old_password,
+				new_password: passwordInfo.new_password,
+			});
+			if (typeof user === 'string' || !user)
+				return new ServerResponse(
+					user || 'Something went wrong while trying to update password',
+				)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			new ServerResponse('Password Updated successfully').respond(res);
 			next(err);
 		}
 	}
