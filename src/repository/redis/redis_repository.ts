@@ -53,6 +53,16 @@ class RedisRepository implements Partial<CachingRepo> {
 		return success;
 	}
 
+	async incrementEntry(key: string): Promise<number | string> {
+		let count!: number | string;
+		try {
+			count = await this.redis.INCR(key);
+		} catch (err: any) {
+			count = err.message;
+		}
+		return count;
+	}
+
 	async findSet(key: string): Promise<string[]> {
 		let result!: string[];
 		try {
