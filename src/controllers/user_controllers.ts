@@ -188,4 +188,20 @@ export default abstract class UserController {
 			next(err);
 		}
 	}
+
+	static async deleteAccount(req: Request, res: Response, next: NextFunction) {
+		try {
+			const deleted = await user_repository.deleteById(req.id);
+			if (typeof deleted === 'string' || !deleted)
+				return new ServerResponse(
+					deleted || 'something went wrong while performing operaion',
+				)
+					.statusCode(400)
+					.success(false)
+					.respond(res);
+			new ServerResponse('Account deleted').respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
 }

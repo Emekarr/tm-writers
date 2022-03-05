@@ -7,8 +7,8 @@ import CreateAuthTokenUseCase from '../usecases/authentication/CreateAuthTokensU
 import validate_body from '../utils/validate_body';
 import ServerResponse from '../utils/response';
 
-class AdminController {
-	login = async (req: Request, res: Response, next: NextFunction) => {
+export default abstract class AdminController {
+	static async login(req: Request, res: Response, next: NextFunction) {
 		try {
 			const loginInfo = req.body;
 			const invalid = validate_body([loginInfo.email, loginInfo.password]);
@@ -47,7 +47,5 @@ class AdminController {
 		} catch (err) {
 			next(err);
 		}
-	};
+	}
 }
-
-export default Object.freeze(new AdminController());

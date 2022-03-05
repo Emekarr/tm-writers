@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import auth_middleware from '../../middleware/authentication/auth_middleware';
-import writer_auth_middleware from '../../middleware/authentication/writer_auth_middleware';
+import special_auth_middleware from '../../middleware/authentication/special_auth_middleware';
 
 import WriterController from '../../controllers/writer_controller';
 
@@ -16,7 +16,7 @@ router.post('/login', WriterController.loginWriter);
 router.get(
 	'/profile',
 	auth_middleware,
-	writer_auth_middleware,
+	special_auth_middleware('writer'),
 	WriterController.getWriter,
 );
 
