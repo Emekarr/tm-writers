@@ -8,6 +8,7 @@ export const validateCreateNewUser = (data: User) =>
 		firstname: Joi.string().max(30).min(2).required(),
 		lastname: Joi.string().max(30).min(2).required(),
 		email: Joi.string().email().required(),
+		dob: Joi.date().required(),
 		password: JoiPassword(
 			{
 				min: 7,

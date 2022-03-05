@@ -11,12 +11,22 @@ import AssignOrderUseCase from '../usecases/order/AssignOrderUseCase';
 import ServerResponse from '../utils/response';
 import validate_body from '../utils/validate_body';
 
+import { IUserDocument } from '../db/models/mongodb/user';
+
+// user repository
+import user_repository from '../repository/mongodb/user_repository';
+
 export default abstract class OrderController {
 	static async createOrder(req: Request, res: Response, next: NextFunction) {
 		try {
 			const orderData = req.body;
 			orderData.createdBy = req.id;
 			const order = await CreateNewOrderUseCase.execute(orderData);
+			if (req.account === 'user') {
+				const user = (await user_repository.findById(req.id)) as IUserDocument;
+				user.orders++;
+				await user_repository.saveData(user);
+			}
 			if (!order || typeof order === 'string')
 				return new ServerResponse(order || 'Order creation faied')
 					.statusCode(400)
@@ -104,6 +114,21 @@ export default abstract class OrderController {
 					.success(false)
 					.respond(res);
 			new ServerResponse('Order successfully assigned').respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async pendingOrder(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { limit, page } = req.query;
+			const orders = await OrderRepository.findManyByFields(
+				{ status: 'PENDING' },
+				{ limit: Number(limit), page: Number(page) },
+			);
+			new ServerResponse('Order retrieved successfully')
+				.data(orders)
+				.respond(res);
 		} catch (err) {
 			next(err);
 		}

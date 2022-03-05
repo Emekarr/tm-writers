@@ -9,6 +9,7 @@ export interface Order {
 	name: string;
 	createdBy: string;
 	uniqueId: string;
+	attachment: string;
 	orderNumber: number;
 }
 
@@ -23,6 +24,9 @@ const orderSchemaFields: Record<keyof IOrder, any> = {
 	createdBy: {
 		type: Types.ObjectId,
 		required: true,
+	},
+	attachment: {
+		type: String,
 	},
 	number: {
 		type: Number,

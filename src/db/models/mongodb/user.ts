@@ -8,16 +8,17 @@ export interface User {
 	lastname: string;
 	email: string;
 	password: string;
+	dob: number;
+	about: string;
 }
 
 export interface IUser extends User {
 	profile_image: string;
 	verified_email: boolean;
+	orders: number;
 }
 
-export interface IUserDocument extends IUser, Document {
-	verifyPassword: (password: string) => Promise<boolean>;
-}
+export interface IUserDocument extends IUser, Document {}
 
 const user_schema_field: Record<keyof IUser, any> = {
 	username: {
@@ -27,6 +28,17 @@ const user_schema_field: Record<keyof IUser, any> = {
 		minlength: 2,
 		trim: true,
 		unique: true,
+	},
+	about: {
+		type: String,
+	},
+	dob: {
+		type: Number,
+		required: true,
+	},
+	orders: {
+		type: Number,
+		default: 0,
 	},
 	firstname: {
 		type: String,

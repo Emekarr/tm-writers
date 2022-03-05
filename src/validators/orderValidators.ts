@@ -8,6 +8,7 @@ export const validateCreateNewOrder = (data: Order) =>
 		timeline: Joi.string().required(),
 		number: Joi.number().min(1).max(99).required(),
 		name: Joi.string().required(),
+		attachment: Joi.string().uri(),
 		createdBy: Joi.string().required(),
 		uniqueId: Joi.string().required(),
 	}).validate(data);
@@ -19,6 +20,5 @@ export const validateUpdateOrder = (data: Partial<IOrder>) =>
 		timeline: Joi.string(),
 		number: Joi.number().min(1).max(99),
 		name: Joi.string(),
-		createdBy: Joi.string(),
 		state: Joi.string(),
 	}).validate(data);
