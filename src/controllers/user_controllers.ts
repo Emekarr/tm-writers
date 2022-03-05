@@ -25,6 +25,10 @@ import EmailMesssenger from '../messaging/email_messenger';
 import RedisRepository from '../repository/redis/redis_repository';
 import user_repository from '../repository/mongodb/user_repository';
 
+// events
+import notif_events from '../events/notifications/notif_events';
+import Emitter from '../events/emitter';
+
 export default abstract class UserController {
 	static async createUser(req: Request, res: Response, next: NextFunction) {
 		try {
@@ -111,6 +115,12 @@ export default abstract class UserController {
 			});
 			res.cookie('REFRESH_TOKEN', tokens.newRefreshToken.token, {
 				maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
+			});
+			// send welcome notification
+			Emitter.emit(notif_events.USER_CREATED.EVENT, {
+				heading: 'Welcome to TDM Writers',
+				body: 'content',
+				reciever: created_user._id,
 			});
 			new ServerResponse('Email verified and user saved')
 				.data({
