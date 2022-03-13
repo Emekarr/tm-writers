@@ -118,13 +118,18 @@ export default abstract class MongoDbRepository implements Repository {
 		filter: object,
 		paginate: PaginateOptions = { limit: 10, page: 1 },
 		populateKeys: string[] = [],
+		sort?: number,
 	): Promise<any> {
 		let results!: any;
 		try {
 			(paginate as any).populate = populateKeys;
 			results = await (this.model as any).paginate(
 				this.__cleanFilterOptions(filter),
-				paginate,
+				{
+					page: paginate.page,
+					limit: paginate.limit,
+					sort: { createdAt: sort },
+				},
 			);
 		} catch (err) {
 			results = [];
@@ -253,7 +258,6 @@ export default abstract class MongoDbRepository implements Repository {
 		try {
 			savedDoc = await payload.save();
 		} catch (err) {
-			console.log(err);
 			savedDoc = null;
 		}
 		return savedDoc;

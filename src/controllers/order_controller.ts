@@ -55,11 +55,16 @@ export default abstract class OrderController {
 
 	static async getAllOrders(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { limit, page } = req.query;
-			const orders = await OrderRepository.findAll({
-				limit: Number(limit),
-				page: Number(page),
-			});
+			const { limit, page, state, sort } = req.query;
+			const orders = await OrderRepository.findManyByFields(
+				{ state },
+				{
+					limit: Number(limit),
+					page: Number(page),
+				},
+				[],
+				Number(sort),
+			);
 			new ServerResponse('Order retrieved successfully')
 				.data(orders)
 				.respond(res);
