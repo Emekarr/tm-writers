@@ -8,7 +8,7 @@ const router = Router();
 
 router.post(
 	'/create',
-	special_auth_middleware('user', 'admin'),
+	special_auth_middleware('user'),
 	OrderController.createOrder,
 );
 
