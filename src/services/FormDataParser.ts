@@ -13,6 +13,8 @@ export default abstract class FormDataParser {
 					!file.originalname.endsWith('.jpeg') &&
 					!file.originalname.endsWith('.jpg') &&
 					!file.originalname.endsWith('.png') &&
+					!file.originalname.endsWith('.doc') &&
+					!file.originalname.endsWith('.docx') &&
 					!file.originalname.endsWith('.pdf')
 				) {
 					cb(new CustomError('Unsupported file fomart passed', 400));
@@ -27,5 +29,9 @@ export default abstract class FormDataParser {
 
 	static uploadMultiple(name: string, count: number) {
 		return this.multer.array(name, count);
+	}
+
+	static uploadOne(name: string) {
+		return this.multer.single(name);
 	}
 }

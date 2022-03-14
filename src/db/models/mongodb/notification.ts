@@ -19,7 +19,7 @@ const notificationSchemaFields: Record<keyof Notification, any> = {
 		required: true,
 	},
 	reciever: {
-		type: Types.DocumentArray,
+		type: Types.ObjectId,
 		required: true,
 	},
 };

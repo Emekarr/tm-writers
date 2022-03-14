@@ -13,13 +13,14 @@ export interface Writer {
 	nearest_landmark: string;
 	highest_qualification: string;
 	experience: number;
-	academic_work: string;
+	academic_work: Types.ObjectId;
+	cv: Types.ObjectId;
+	profile_image: Types.ObjectId;
 	strength: string[];
 	weakness: string[];
 }
 
 export interface IWriter extends Writer {
-	profile_image: Buffer;
 	verified_email: boolean;
 	verified_mobile: boolean;
 	approved_writer: boolean;
@@ -95,8 +96,9 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 		trim: true,
 	},
 	academic_work: {
-		type: String,
+		type: Types.ObjectId,
 		required: true,
+		ref: 'Upload',
 	},
 	nearest_landmark: {
 		type: String,
@@ -113,8 +115,14 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 		trim: true,
 	},
 	profile_image: {
-		type: String,
+		type: Types.ObjectId,
 		default: null,
+		ref: 'Upload',
+	},
+	cv: {
+		type: Types.ObjectId,
+		required: true,
+		ref: 'Upload',
 	},
 	verified_email: {
 		type: Boolean,

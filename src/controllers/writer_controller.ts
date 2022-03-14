@@ -6,8 +6,8 @@ import ServerResponse from '../utils/response';
 import { hashData } from '../utils/hash';
 import validate_body from '../utils/validate_body';
 
-// models
-import { IWriter } from '../db/models/mongodb/writer';
+// services
+import MediaService from '../services/MediaService';
 
 // usecases
 import CacheOtpUseCase from '../usecases/otp/CacheOtpUseCase';
@@ -28,6 +28,18 @@ export default abstract class WriterController {
 	static async createWriter(req: Request, res: Response, next: NextFunction) {
 		try {
 			const writer = req.body;
+			if (req.files) {
+				for (let i = 0; i < req.files.length; i++) {
+					const file = (req.files as any)[i];
+					writer[file.originalname.split('.', 1)] =
+						await MediaService.uploadDataStream(
+							file.buffer,
+							`${file.originalname.split('.', 1)}s`,
+							file.originalname,
+						);
+				}
+			}
+
 			const created_writer = await CacheWriterUseCase.execute(writer);
 			if (typeof created_writer === 'string')
 				return new ServerResponse(created_writer)
