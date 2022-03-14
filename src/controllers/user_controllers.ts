@@ -288,9 +288,15 @@ export default abstract class UserController {
 	) {
 		try {
 			const data = req.body;
+			const invalid = validate_body([data.email, data.body, data.name]);
+			if (invalid)
+				return new ServerResponse(invalid)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
 			await EmailMesssenger.send(
 				process.env.TDM_EMAIL as string,
-				`${data.body}\n${`User ID----` + data.id || ''}`,
+				`${data.body}\nContact Email---- ${data.email}`,
 				`Admin, ${data.name} has contacted TDM`,
 			);
 			new ServerResponse('Your enqiry has been sent').respond(res);

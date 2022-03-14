@@ -19,11 +19,16 @@ router.post('/login', UserController.loginUser);
 
 router.put(
 	'/profile/update',
+	auth_middleware,
 	FormDataParser.uploadOne('profile-image'),
 	UserController.updateUser,
 );
 
-router.put('/account/update-password', UserController.updateUserPassword);
+router.put(
+	'/account/update-password',
+	auth_middleware,
+	UserController.updateUserPassword,
+);
 
 router.get(
 	'/profile',
@@ -34,6 +39,6 @@ router.get(
 
 router.post('/contact/help-me', UserController.sendContactEmail);
 
-router.delete('/account/delete', UserController.deleteAccount);
+router.delete('/account/delete', auth_middleware, UserController.deleteAccount);
 
 export default router;
