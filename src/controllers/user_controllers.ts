@@ -6,9 +6,6 @@ import ServerResponse from '../utils/response';
 import { hashData } from '../utils/hash';
 import validate_body from '../utils/validate_body';
 
-// models
-import { IUser } from '../db/models/mongodb/user';
-
 // usecases
 import CacheOtpUseCase from '../usecases/otp/CacheOtpUseCase';
 import CacheUserUseCase from '../usecases/users/CacheUserUseCase';
@@ -17,6 +14,7 @@ import CreateAuthTokenUseCase from '../usecases/authentication/CreateAuthTokensU
 import LoginUserUseCase from '../usecases/users/LoginUserUseCase';
 import VerifyOtpUseCase from '../usecases/otp/VerifyOtpUseCase';
 import UpdatePasswordUserUseCase from '../usecases/users/UpdateUserPasswordUseCase';
+import UpdateUserUseCase from '../usecases/users/UpdateUserUseCase';
 
 // messaging
 import EmailMesssenger from '../messaging/email_messenger';
@@ -29,10 +27,20 @@ import user_repository from '../repository/mongodb/user_repository';
 import notif_events from '../events/notifications/notif_events';
 import Emitter from '../events/emitter';
 
+// services
+import MediaService from '../services/MediaService';
+
 export default abstract class UserController {
 	static async createUser(req: Request, res: Response, next: NextFunction) {
 		try {
 			const user = req.body;
+			if (req.file) {
+				user.profile_image = await MediaService.uploadDataStream(
+					req.file.buffer,
+					'profile-images-users',
+					req.file.originalname,
+				);
+			}
 			const created_user = await CacheUserUseCase.execute(user);
 			if (typeof created_user === 'string')
 				return new ServerResponse(created_user)
@@ -211,6 +219,29 @@ export default abstract class UserController {
 					.statusCode(400)
 					.respond(res);
 			new ServerResponse('Password Updated successfully').respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async updateUser(req: Request, res: Response, next: NextFunction) {
+		try {
+			const data = req.body;
+			const { public_id } = req.query;
+			if (req.file) {
+				await MediaService.updateData(
+					req.file.buffer,
+					'profile-images-users',
+					public_id as string,
+				);
+			}
+			const updated = await UpdateUserUseCase.execute(data, req.id);
+			if (typeof updated === 'string' || !updated)
+				return new ServerResponse(updated || 'failed to update user')
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			new ServerResponse('user updated').respond(res);
 		} catch (err) {
 			next(err);
 		}

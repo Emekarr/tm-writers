@@ -6,6 +6,9 @@ import special_auth_middleware from '../../middleware/authentication/special_aut
 // controller
 import UserController from '../../controllers/user_controllers';
 
+// services
+import FormDataParser from '../../services/FormDataParser';
+
 const router = Router();
 
 router.post('/signup', UserController.createUser);
@@ -13,6 +16,12 @@ router.post('/signup', UserController.createUser);
 router.post('/verify-account', UserController.verifyAccount);
 
 router.post('/login', UserController.loginUser);
+
+router.put(
+	'/profile/update',
+	FormDataParser.uploadOne('profile-image'),
+	UserController.updateUser,
+);
 
 router.get(
 	'/profile',

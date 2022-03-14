@@ -32,7 +32,8 @@ export const validateCreateNewWriter = (data: Writer) =>
 
 			.required(),
 		experience: Joi.number().required(),
-		academic_work: Joi.string().uri().required(),
+		academic_work: Joi.string().required(),
+		cv: Joi.string().required(),
 		strength: Joi.array().items(Joi.string()),
 		weakness: Joi.array().items(Joi.string()),
 		verified_email: Joi.boolean(),
@@ -67,8 +68,6 @@ export const validateUpdateWriter = (data: Writer) =>
 			'Doctorate',
 		),
 		experience: Joi.number(),
-		academic_work: Joi.string().required(),
-		cv: Joi.string().required(),
 		strength: Joi.array().items(Joi.string()),
 		weakness: Joi.array().items(Joi.string()),
 	}).validate(data) as ValidationResult;

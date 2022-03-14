@@ -20,7 +20,7 @@ class MediaService {
 			this.cld.uploader
 				.upload_stream({ folder }, async (error, result) => {
 					if (error) {
-						console.log(error);
+						reject(error);
 					} else {
 						console.log('UPLOAD SUCCESS' + result);
 						const upload = await this.upload_repository.createEntry({
@@ -34,6 +34,27 @@ class MediaService {
 					}
 				})
 				.end(data);
+		});
+	}
+
+	updateData(data: Buffer, folder: string, public_id: string) {
+		return new Promise((resolve, reject) => {
+			this.cld.uploader.upload_stream(
+				{
+					folder,
+					public_id,
+					invalidate: true,
+					overwrite: true,
+				},
+				async (error, result) => {
+					if (error) {
+						reject(error);
+					} else {
+						console.log('UPLOAD UPDATE SUCCESS' + result);
+						resolve(true);
+					}
+				},
+			);
 		});
 	}
 }
