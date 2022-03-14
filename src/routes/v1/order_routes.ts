@@ -4,10 +4,13 @@ import special_auth_middleware from '../../middleware/authentication/special_aut
 
 import OrderController from '../../controllers/order_controller';
 
+import FormDataParser from '../../services/FormDataParser';
+
 const router = Router();
 
 router.post(
 	'/create',
+	FormDataParser.uploadOne('attachment'),
 	special_auth_middleware('user'),
 	OrderController.createOrder,
 );

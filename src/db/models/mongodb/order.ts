@@ -24,9 +24,11 @@ const orderSchemaFields: Record<keyof IOrder, any> = {
 	createdBy: {
 		type: Types.ObjectId,
 		required: true,
+		ref: 'User',
 	},
 	attachment: {
-		type: String,
+		type: Types.ObjectId,
+		ref: 'Upload',
 	},
 	number: {
 		type: Number,

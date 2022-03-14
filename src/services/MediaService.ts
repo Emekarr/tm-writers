@@ -30,7 +30,7 @@ class MediaService {
 							type: (result as any).resource_type,
 							name,
 						});
-						resolve(upload?._id);
+						resolve(upload?._id.toString());
 					}
 				})
 				.end(data);
