@@ -280,4 +280,22 @@ export default abstract class UserController {
 			next(err);
 		}
 	}
+
+	static async sendContactEmail(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	) {
+		try {
+			const data = req.body;
+			await EmailMesssenger.send(
+				process.env.TDM_EMAIL as string,
+				`${data.body}\n${`User ID----` + data.id || ''}`,
+				`Admin, ${data.name} has contacted TDM`,
+			);
+			new ServerResponse('Your enqiry has been sent').respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
 }

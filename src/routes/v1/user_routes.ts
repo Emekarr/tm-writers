@@ -32,6 +32,8 @@ router.get(
 	UserController.getUser,
 );
 
+router.post('/contact/help-me', UserController.sendContactEmail);
+
 router.delete('/account/delete', UserController.deleteAccount);
 
 export default router;
