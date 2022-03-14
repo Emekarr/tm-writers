@@ -23,6 +23,8 @@ router.put(
 	UserController.updateUser,
 );
 
+router.put('/account/update-password', UserController.updateUserPassword);
+
 router.get(
 	'/profile',
 	auth_middleware,
