@@ -24,12 +24,15 @@ export const validateCreateNewUser = (data: User) =>
 		verified_email: Joi.boolean(),
 	}).validate(data);
 
-export const validateUpdateUser = (data: User) =>
+export const validateUpdateUser = (data: Partial<User>) =>
 	Joi.object({
 		username: Joi.string().max(30).min(2),
 		firstname: Joi.string().max(30).min(2),
 		lastname: Joi.string().max(30).min(2),
+		dob: Joi.date(),
 		email: Joi.string().email(),
+		bio: Joi.string(),
+		gender: Joi.string().valid('M', 'F'),
 		password: JoiPassword(
 			{
 				min: 7,
@@ -41,5 +44,4 @@ export const validateUpdateUser = (data: User) =>
 			},
 			'Password',
 		),
-		profile_image: Joi.string().uri(),
 	}).validate(data);

@@ -16,6 +16,8 @@ export interface IUser extends User {
 	profile_image: string;
 	verified_email: boolean;
 	orders: number;
+	bio: string;
+	gender: string;
 }
 
 export interface IUserDocument extends IUser, Document {}
@@ -28,6 +30,13 @@ const user_schema_field: Record<keyof IUser, any> = {
 		minlength: 2,
 		trim: true,
 		unique: true,
+	},
+	bio: {
+		type: String,
+		trim: true,
+	},
+	gender: {
+		type: String,
 	},
 	about: {
 		type: String,

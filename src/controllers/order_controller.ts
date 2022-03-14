@@ -11,6 +11,10 @@ import AssignOrderUseCase from '../usecases/order/AssignOrderUseCase';
 import ServerResponse from '../utils/response';
 import validate_body from '../utils/validate_body';
 
+// services
+import MediaService from '../services/MediaService';
+
+// models
 import { IUserDocument } from '../db/models/mongodb/user';
 
 // user repository
@@ -20,6 +24,13 @@ export default abstract class OrderController {
 	static async createOrder(req: Request, res: Response, next: NextFunction) {
 		try {
 			const orderData = req.body;
+			if (req.file) {
+				orderData.attachment = await MediaService.uploadDataStream(
+					req.file.buffer,
+					'order-attachments',
+					req.file.originalname,
+				);
+			}
 			orderData.createdBy = req.id;
 			const order = await CreateNewOrderUseCase.execute(orderData);
 			if (req.account === 'user') {
