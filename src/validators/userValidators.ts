@@ -32,7 +32,7 @@ export const validateUpdateUser = (data: Partial<User>) =>
 		dob: Joi.date(),
 		email: Joi.string().email(),
 		bio: Joi.string(),
-		gender: Joi.string().valid('M', 'F', 'N/A'),
+		gender: Joi.string().valid('M', 'F'),
 		password: JoiPassword(
 			{
 				min: 7,

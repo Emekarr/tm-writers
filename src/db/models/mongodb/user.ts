@@ -37,7 +37,6 @@ const user_schema_field: Record<keyof IUser, any> = {
 	},
 	gender: {
 		type: String,
-		default: 'N/A',
 	},
 	about: {
 		type: String,
