@@ -228,7 +228,19 @@ export default abstract class UserController {
 		try {
 			const data = req.body;
 			const { public_id } = req.query;
+			if (Object.keys(data).length === 0 && !req.file)
+				return new ServerResponse('Please provide data to be updated')
+					.success(false)
+					.statusCode(400)
+					.respond(res);
 			if (req.file) {
+				if (!public_id)
+					return new ServerResponse(
+						'Please provide the public_id of the upload',
+					)
+						.success(false)
+						.statusCode(400)
+						.respond(res);
 				await MediaService.updateData(
 					req.file.buffer,
 					'profile-images-users',

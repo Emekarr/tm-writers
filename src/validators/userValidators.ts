@@ -29,7 +29,7 @@ export const validateUpdateUser = (data: Partial<User>) =>
 		username: Joi.string().max(30).min(2),
 		firstname: Joi.string().max(30).min(2),
 		lastname: Joi.string().max(30).min(2),
-		dob: Joi.date().required(),
+		dob: Joi.date(),
 		email: Joi.string().email(),
 		password: JoiPassword(
 			{
