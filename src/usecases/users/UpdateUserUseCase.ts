@@ -10,6 +10,6 @@ export default abstract class UpdateUserUseCase {
 	static async execute(data: Partial<User>, user: string) {
 		const update = this.validateUpdateUser(data);
 		if (update.error) return update.error.message || 'new user data invalid';
-		return this.UserRepository.updateByFields({ id: user }, update);
+		return this.UserRepository.updateById(user, update.value);
 	}
 }
