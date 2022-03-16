@@ -29,7 +29,7 @@ export default abstract class UpdatePasswordUserUseCase {
 			user.password,
 		);
 		if (!success) return 'Authentication failed.';
-		user.password = loginInfo.new_password;
+		user.password = response.value.password;
 		return await this.UserRepository.saveData(user);
 	}
 }
