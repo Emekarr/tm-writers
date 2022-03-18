@@ -99,9 +99,9 @@ export default abstract class OrderController {
 
 	static async getOrders(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { limit, page } = req.query;
+			const { limit, page, state } = req.query;
 			const orders = await OrderRepository.findManyByFields(
-				{ createdBy: req.id },
+				{ createdBy: req.id, state },
 				{ limit: Number(limit), page: Number(page) },
 			);
 			new ServerResponse('Order retrieved successfully')
@@ -178,21 +178,6 @@ export default abstract class OrderController {
 					.success(false)
 					.respond(res);
 			new ServerResponse('Order successfully assigned').respond(res);
-		} catch (err) {
-			next(err);
-		}
-	}
-
-	static async pendingOrder(req: Request, res: Response, next: NextFunction) {
-		try {
-			const { limit, page } = req.query;
-			const orders = await OrderRepository.findManyByFields(
-				{ status: 'PENDING' },
-				{ limit: Number(limit), page: Number(page) },
-			);
-			new ServerResponse('Order retrieved successfully')
-				.data(orders)
-				.respond(res);
 		} catch (err) {
 			next(err);
 		}
