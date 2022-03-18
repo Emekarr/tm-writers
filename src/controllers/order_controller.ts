@@ -7,6 +7,7 @@ import CreateNewOrderUseCase from '../usecases/order/CreateNewOrderUseCase';
 import DeleteOrderUseCase from '../usecases/order/DeleteOrderUseCase';
 import AssignOrderUseCase from '../usecases/order/AssignOrderUseCase';
 import ApproveOrderUseCase from '../usecases/order/ApproveOrderUseCase';
+import RejectOrderUseCase from '../usecases/order/RejectOrderUseCase';
 
 // utils
 import ServerResponse from '../utils/response';
@@ -52,7 +53,7 @@ export default abstract class OrderController {
 
 	static async approveOrders(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { ids } = req.query;
+			const { ids } = req.body;
 			if (!ids || (ids as string[]).length === 0)
 				return new ServerResponse(
 					'Please pass in an array of ids to be approved',
@@ -66,7 +67,29 @@ export default abstract class OrderController {
 					.success(false)
 					.statusCode(400)
 					.respond(res);
-			new ServerResponse('Order approved').respond(res);
+			new ServerResponse('Orders approved').respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async rejectOrders(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { ids } = req.body;
+			if (!ids || (ids as string[]).length === 0)
+				return new ServerResponse(
+					'Please pass in an array of ids to be rejected',
+				)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			const result = await RejectOrderUseCase.execute(ids as string[]);
+			if (!result || typeof result === 'string')
+				return new ServerResponse(result || 'could not reject order')
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			new ServerResponse('Orders rejected').respond(res);
 		} catch (err) {
 			next(err);
 		}

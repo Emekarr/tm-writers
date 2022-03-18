@@ -1,0 +1,10 @@
+enum OrderState {
+	PENDING = 'PENDING',
+	APPROVED = 'APPROVED',
+	REJECTED = 'REJECTED',
+	FOWARDED = 'FOWARDED',
+	IN_PROGRESS = 'IN_PROGRESS',
+	COMPLETED = 'COMPLETED',
+}
+
+export default OrderState;

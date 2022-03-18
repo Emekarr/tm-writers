@@ -21,6 +21,12 @@ router.put(
 	OrderController.approveOrders,
 );
 
+router.put(
+	'/reject',
+	special_auth_middleware('admin'),
+	OrderController.rejectOrders,
+);
+
 router.get(
 	'/user/all',
 	special_auth_middleware('user'),
