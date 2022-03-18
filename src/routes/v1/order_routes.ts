@@ -51,10 +51,4 @@ router.put(
 	OrderController.assignOrder,
 );
 
-router.get(
-	'/pending',
-	special_auth_middleware('user'),
-	OrderController.pendingOrder,
-);
-
 export default router;

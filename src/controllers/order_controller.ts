@@ -54,12 +54,13 @@ export default abstract class OrderController {
 	static async approveOrders(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { ids } = req.body;
-			if (!ids || (ids as string[]).length === 0)
+			const invalid = validate_body(ids);
+			if (invalid)
 				return new ServerResponse(
-					'Please pass in an array of ids to be approved',
+					invalid || 'please pass in an array of id to be approved',
 				)
-					.success(false)
 					.statusCode(400)
+					.success(false)
 					.respond(res);
 			const result = await ApproveOrderUseCase.execute(ids as string[]);
 			if (!result || typeof result === 'string')
@@ -76,12 +77,13 @@ export default abstract class OrderController {
 	static async rejectOrders(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { ids } = req.body;
-			if (!ids || (ids as string[]).length === 0)
+			const invalid = validate_body(ids);
+			if (invalid)
 				return new ServerResponse(
-					'Please pass in an array of ids to be rejected',
+					invalid || 'please pass in an array of id to be rejected',
 				)
-					.success(false)
 					.statusCode(400)
+					.success(false)
 					.respond(res);
 			const result = await RejectOrderUseCase.execute(ids as string[]);
 			if (!result || typeof result === 'string')
