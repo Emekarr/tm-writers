@@ -6,6 +6,7 @@ import OrderRepository from '../repository/mongodb/order_repository';
 import CreateNewOrderUseCase from '../usecases/order/CreateNewOrderUseCase';
 import DeleteOrderUseCase from '../usecases/order/DeleteOrderUseCase';
 import AssignOrderUseCase from '../usecases/order/AssignOrderUseCase';
+import ApproveOrderUseCase from '../usecases/order/ApproveOrderUseCase';
 
 // utils
 import ServerResponse from '../utils/response';
@@ -44,6 +45,28 @@ export default abstract class OrderController {
 					.success(false)
 					.respond(res);
 			new ServerResponse('Order creation successful').data(order).respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async approveOrders(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { ids } = req.query;
+			if (!ids || (ids as string[]).length === 0)
+				return new ServerResponse(
+					'Please pass in an array of ids to be approved',
+				)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			const result = await ApproveOrderUseCase.execute(ids as string[]);
+			if (!result || typeof result === 'string')
+				return new ServerResponse(result || 'could not approve order')
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			new ServerResponse('Order approved').respond(res);
 		} catch (err) {
 			next(err);
 		}

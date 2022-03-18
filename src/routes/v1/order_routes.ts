@@ -15,6 +15,12 @@ router.post(
 	OrderController.createOrder,
 );
 
+router.put(
+	'/approve',
+	special_auth_middleware('admin'),
+	OrderController.approveOrders,
+);
+
 router.get(
 	'/user/all',
 	special_auth_middleware('user'),

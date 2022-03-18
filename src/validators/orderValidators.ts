@@ -21,5 +21,12 @@ export const validateUpdateOrder = (data: Partial<IOrder>) =>
 		number: Joi.number().min(1).max(99),
 		attachment: Joi.string(),
 		name: Joi.string(),
-		state: Joi.string(),
+		state: Joi.string().valid(
+			'PENDING',
+			'APPROVED',
+			'REJECTED',
+			'FOWARDED',
+			'IN_PROGRESS',
+			'COMPLETED',
+		),
 	}).validate(data);

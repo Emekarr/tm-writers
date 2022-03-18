@@ -58,6 +58,14 @@ const orderSchemaFields: Record<keyof IOrder, any> = {
 	},
 	state: {
 		type: String,
+		enum: [
+			'PENDING',
+			'APPROVED',
+			'REJECTED',
+			'FOWARDED',
+			'IN_PROGRESS',
+			'COMPLETED',
+		],
 		default: 'PENDING',
 	},
 	orderNumber: {
