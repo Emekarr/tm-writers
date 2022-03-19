@@ -15,6 +15,8 @@ export default abstract class FormDataParser {
 					!file.originalname.endsWith('.png') &&
 					!file.originalname.endsWith('.doc') &&
 					!file.originalname.endsWith('.docx') &&
+					!file.originalname.endsWith('.xlsx') &&
+					!file.originalname.endsWith('.xls') &&
 					!file.originalname.endsWith('.pdf')
 				) {
 					cb(new CustomError('Unsupported file fomart passed', 400));

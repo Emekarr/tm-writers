@@ -12,6 +12,8 @@ import admin_route from './admin_routes';
 
 import notif_routes from './notification_routes';
 
+import request_route from './request_routes';
+
 const router = Router();
 
 router.use('/user', user_routes);
@@ -23,5 +25,7 @@ router.use('/order', auth_middleware, order_routes);
 router.use('/admin', admin_route);
 
 router.use('/notifications', auth_middleware, notif_routes);
+
+router.use('/request', request_route);
 
 export default router;
