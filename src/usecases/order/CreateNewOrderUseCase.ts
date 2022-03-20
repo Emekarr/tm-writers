@@ -17,7 +17,7 @@ export default abstract class CreateNewOrderUseCase {
 			useLetters: true,
 			useNumbers: true,
 			length: 14,
-		})}`;
+		})}`.toUpperCase();
 		const order = this.validateCreateNewOrder(data);
 		if (order.error) return `invalid data provided : ${order.error.message}`;
 		const user = (await this.user_repository.findById(
