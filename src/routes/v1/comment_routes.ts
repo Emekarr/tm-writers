@@ -8,4 +8,6 @@ router.post('/create', CommentController.createComment);
 
 router.get('/fetch', CommentController.getComments);
 
+router.delete('/delete', CommentController.deleteComment);
+
 export default router;

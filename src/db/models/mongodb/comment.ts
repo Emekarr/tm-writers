@@ -4,6 +4,7 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 export interface Comment {
 	name: string;
 	order: Types.ObjectId;
+	author: Types.ObjectId;
 	comment: string;
 	profile_image: Types.ObjectId;
 }
@@ -20,6 +21,10 @@ const commentSchemaFields: Record<keyof Comment, any> = {
 		type: Types.ObjectId,
 		required: true,
 		ref: 'Order',
+	},
+	author: {
+		type: Types.ObjectId,
+		required: true,
 	},
 	comment: {
 		type: String,

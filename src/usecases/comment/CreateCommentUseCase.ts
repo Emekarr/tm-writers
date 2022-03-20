@@ -11,7 +11,7 @@ export default abstract class CreateCommentUseCase {
 
 	private static order_repository = order_repository;
 
-	static async execute(data: Comment, account: string, id: string) {
+	static async execute(data: Comment, account: string) {
 		if (account === 'user') {
 			data.name = 'you';
 		} else if (account === 'admin') {
@@ -26,7 +26,7 @@ export default abstract class CreateCommentUseCase {
 				data.order.toString(),
 			)) as IOrderDocument;
 			if (!order) return 'order does not exist';
-			if (order.createdBy.toString() !== id)
+			if (order.createdBy.toString() !== comment.value.author)
 				return 'you can only comment on orders created by you';
 		}
 		return await this.comment_repository.createEntry(comment.value);

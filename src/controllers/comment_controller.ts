@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 // use cases
 import CreateCommentUseCase from '../usecases/comment/CreateCommentUseCase';
+import DeleteCommentUseCase from '../usecases/comment/DeleteCommentUseCase';
 
 // utils
 import validate_body from '../utils/validate_body';
@@ -9,6 +10,7 @@ import ServerResponse from '../utils/response';
 
 // repository
 import comment_repository from '../repository/mongodb/comment_repository';
+import { type } from 'os';
 
 export default abstract class CommentController {
 	static async createComment(req: Request, res: Response, next: NextFunction) {
@@ -23,11 +25,8 @@ export default abstract class CommentController {
 					.statusCode(400)
 					.success(false)
 					.respond(res);
-			const comment = await CreateCommentUseCase.execute(
-				data,
-				req.account,
-				req.id,
-			);
+			data.author = req.id;
+			const comment = await CreateCommentUseCase.execute(data, req.account);
 			if (typeof comment === 'string' || !comment)
 				return new ServerResponse(
 					comment || 'something went wrong while creating a comment',
@@ -61,6 +60,35 @@ export default abstract class CommentController {
 				},
 			);
 			new ServerResponse('Comments retrieved').data(comments).respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async deleteComment(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { comment } = req.query;
+			const invalid = validate_body([comment]);
+			if (invalid)
+				return new ServerResponse(
+					invalid ||
+						'please pass in the appropraite data needed to create a comment',
+				)
+					.statusCode(400)
+					.success(false)
+					.respond(res);
+			const result = await DeleteCommentUseCase.execute(
+				comment as string,
+				req.id,
+			);
+			if (typeof result === 'string')
+				return new ServerResponse(
+					result || 'something went wrong while deleting your comment',
+				)
+					.statusCode(400)
+					.success(false)
+					.respond(res);
+			new ServerResponse('Comment deleted successfully').respond(res);
 		} catch (err) {
 			next(err);
 		}
