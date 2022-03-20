@@ -253,12 +253,12 @@ export default abstract class MongoDbRepository implements Repository {
 		return success;
 	}
 
-	async saveData(payload: Document): Promise<Document | null> {
-		let savedDoc!: Document | null;
+	async saveData(payload: Document): Promise<Document | string> {
+		let savedDoc!: Document | string;
 		try {
 			savedDoc = await payload.save();
-		} catch (err) {
-			savedDoc = null;
+		} catch (err: any) {
+			savedDoc = err.message;
 		}
 		return savedDoc;
 	}
