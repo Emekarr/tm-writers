@@ -6,4 +6,6 @@ const router = Router();
 
 router.post('/create', CommentController.createComment);
 
+router.get('/fetch', CommentController.getComments);
+
 export default router;
