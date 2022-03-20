@@ -20,6 +20,7 @@ router.post('/login', UserController.loginUser);
 router.put(
 	'/profile/update',
 	auth_middleware,
+	special_auth_middleware('user'),
 	FormDataParser.uploadOne('profile-image'),
 	UserController.updateUser,
 );
@@ -27,13 +28,14 @@ router.put(
 router.put(
 	'/account/update-password',
 	auth_middleware,
+	special_auth_middleware('user'),
 	UserController.updateUserPassword,
 );
 
 router.get(
 	'/profile',
 	auth_middleware,
-	special_auth_middleware('user'),
+	special_auth_middleware('user', 'admin'),
 	UserController.getUser,
 );
 

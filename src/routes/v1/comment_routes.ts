@@ -1,13 +1,27 @@
 import { Router } from 'express';
 
+import special_auth_middleware from '../../middleware/authentication/special_auth_middleware';
+
 import CommentController from '../../controllers/comment_controller';
 
 const router = Router();
 
-router.post('/create', CommentController.createComment);
+router.post(
+	'/create',
+	special_auth_middleware('admin', 'user', 'writer'),
+	CommentController.createComment,
+);
 
-router.get('/fetch', CommentController.getComments);
+router.get(
+	'/fetch',
+	special_auth_middleware('admin', 'user', 'writer'),
+	CommentController.getComments,
+);
 
-router.delete('/delete', CommentController.deleteComment);
+router.delete(
+	'/delete',
+	special_auth_middleware('admin', 'user', 'writer'),
+	CommentController.deleteComment,
+);
 
 export default router;

@@ -22,7 +22,7 @@ router.post('/login', WriterController.loginWriter);
 router.get(
 	'/profile',
 	auth_middleware,
-	special_auth_middleware('writer'),
+	special_auth_middleware('writer', 'admin', 'writer-unapproved'),
 	WriterController.getWriter,
 );
 

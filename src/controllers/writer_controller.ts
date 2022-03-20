@@ -112,7 +112,7 @@ export default abstract class WriterController {
 			const tokens = await CreateAuthTokenUseCase.execute(
 				req.ip,
 				created_writer._id.toString(),
-				'writer',
+				'writer-unapproved',
 			);
 			if (typeof tokens === 'string' || !tokens)
 				return new ServerResponse(
