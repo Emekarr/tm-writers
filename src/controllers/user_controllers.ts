@@ -34,13 +34,7 @@ export default abstract class UserController {
 	static async createUser(req: Request, res: Response, next: NextFunction) {
 		try {
 			const user = req.body;
-			if (req.file) {
-				user.profile_image = await MediaService.uploadDataStream(
-					req.file.buffer,
-					'profile-images-users',
-					req.file.originalname,
-				);
-			}
+			user.profile_image = req.file?.buffer;
 			const created_user = await CacheUserUseCase.execute(user);
 			if (typeof created_user === 'string')
 				return new ServerResponse(created_user)

@@ -19,6 +19,7 @@
 		"@types/mongoose": "^5.11.97",
 		"@types/multer": "^1.4.7",
 		"@types/node": "^16.9.1",
+		"@types/streamifier": "^0.1.0",
 		"@types/uuid": "^8.3.3",
 		"env-cmd": "^10.1.0",
 		"nodemon": "^2.0.12",

@@ -254,6 +254,13 @@
     "@types/mime" "^1"
     "@types/node" "*"
 
+"@types/streamifier@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@types/streamifier/-/streamifier-0.1.0.tgz#ff2fad6dccd1df65ba69c851999e35990fc8508b"
+  integrity sha512-pAGnUJg5pMAKv5ctJudPaGJHEuU/tkgN/F3tC5kQ5YHKS5gpfRZVVmLHE8t3h8H4Nn2JMJxf6T7h4QvSL3H/ug==
+  dependencies:
+    "@types/node" "*"
+
 "@types/uuid@^8.3.3":
   version "8.3.3"
   resolved "https://registry.npmjs.org/@types/uuid/-/uuid-8.3.3.tgz"

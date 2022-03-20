@@ -1,4 +1,5 @@
 import cloudinary from 'cloudinary';
+import streamifier from 'streamifier';
 
 import upload_repository from '../repository/mongodb/upload_repository';
 
@@ -6,6 +7,8 @@ class MediaService {
 	private cld = cloudinary.v2;
 
 	private upload_repository = upload_repository;
+
+	private streamifier = streamifier;
 
 	constructor() {
 		this.cld.config({
@@ -17,8 +20,9 @@ class MediaService {
 
 	uploadDataStream(data: Buffer, folder: string, name: string) {
 		return new Promise((resolve, reject) => {
-			this.cld.uploader
-				.upload_stream({ folder }, async (error, result) => {
+			const upload_stream = this.cld.uploader.upload_stream(
+				{ folder },
+				async (error, result) => {
 					if (error) {
 						reject(error);
 					} else {
@@ -32,8 +36,9 @@ class MediaService {
 						});
 						resolve(upload?._id.toString());
 					}
-				})
-				.end(data);
+				},
+			);
+			this.streamifier.createReadStream(data).pipe(upload_stream);
 		});
 	}
 
