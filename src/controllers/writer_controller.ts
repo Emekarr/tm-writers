@@ -195,4 +195,25 @@ export default abstract class WriterController {
 			next(err);
 		}
 	}
+
+	static async getWriters(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { approved_writer, page, limit } = req.query;
+			const invalid = validate_body([approved_writer]);
+			if (invalid)
+				return new ServerResponse(invalid)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			const writers = await writer_repository.findManyByFields(
+				{ approved_writer },
+				{ page: Number(page), limit: Number(limit) },
+			);
+			new ServerResponse('Writers fetched successfully')
+				.data(writers)
+				.respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
 }

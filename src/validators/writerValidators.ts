@@ -65,7 +65,7 @@ export const validateCacheNewWriter = (data: Writer) =>
 			.required(),
 		experience: Joi.number(),
 		academic_work: Joi.any(),
-		cv: Joi.any().required(),
+		cv: Joi.any(),
 		strength: Joi.array().items(Joi.string()),
 		weakness: Joi.array().items(Joi.string()),
 		verified_email: Joi.boolean(),

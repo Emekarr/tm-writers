@@ -26,4 +26,11 @@ router.get(
 	WriterController.getWriter,
 );
 
+router.get(
+	'/fetch',
+	auth_middleware,
+	special_auth_middleware('admin'),
+	WriterController.getWriters,
+);
+
 export default router;

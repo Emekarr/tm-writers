@@ -97,7 +97,7 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 	},
 	academic_work: {
 		type: Types.ObjectId,
-		required: true,
+		// required: true,
 		ref: 'Upload',
 	},
 	nearest_landmark: {
@@ -121,7 +121,7 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 	},
 	cv: {
 		type: Types.ObjectId,
-		required: true,
+		// required: true,
 		ref: 'Upload',
 	},
 	verified_email: {
