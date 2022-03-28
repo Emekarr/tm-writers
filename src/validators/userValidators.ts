@@ -20,7 +20,7 @@ export const validateCreateNewUser = (data: User) =>
 			},
 			'Password',
 		),
-		profile_image: Joi.string().uri(),
+		profile_image: Joi.any(),
 		verified_email: Joi.boolean(),
 	}).validate(data);
 
@@ -33,6 +33,7 @@ export const validateUpdateUser = (data: Partial<User>) =>
 		email: Joi.string().email(),
 		bio: Joi.string(),
 		gender: Joi.string().valid('M', 'F'),
+		profile_image: Joi.any(),
 		password: JoiPassword(
 			{
 				min: 7,

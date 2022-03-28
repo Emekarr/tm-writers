@@ -15,6 +15,7 @@ export default abstract class CacheWriterUseCase {
 
 	static async execute(data: Writer) {
 		const writer = this.validateCacheNewWriter(data);
+		if (writer.error) return `invalid data provided : ${writer.error}`;
 		const existing_user = await this.user_repository.findOneByFields({
 			email: writer.value.email,
 		});
@@ -25,7 +26,6 @@ export default abstract class CacheWriterUseCase {
 		});
 		if (existing_writer)
 			return `writer with email ${writer.value.email} already exists`;
-		if (writer.error) return `invalid data provided : ${writer.error}`;
 		return await this.RedisRepository.createEntryAndExpire(
 			`${writer.value.email}-writer`,
 			writer.value,

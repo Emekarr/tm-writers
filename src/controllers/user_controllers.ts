@@ -227,20 +227,21 @@ export default abstract class UserController {
 					.success(false)
 					.statusCode(400)
 					.respond(res);
-			if (req.file) {
-				if (!public_id)
-					return new ServerResponse(
-						'Please provide the public_id of the upload',
-					)
-						.success(false)
-						.statusCode(400)
-						.respond(res);
-				await MediaService.updateData(
-					req.file.buffer,
-					'profile-images-users',
-					public_id as string,
-				);
-			}
+			// if (req.file) {
+			// 	if (!public_id)
+			// 		return new ServerResponse(
+			// 			'Please provide the public_id of the upload',
+			// 		)
+			// 			.success(false)
+			// 			.statusCode(400)
+			// 			.respond(res);
+			// 	await MediaService.updateData(
+			// 		req.file.buffer,
+			// 		'profile-images-users',
+			// 		public_id as string,
+			// 	);
+			// }
+			data.profile_image = req.file?.buffer;
 			const updated = await UpdateUserUseCase.execute(data, req.id);
 			if (typeof updated === 'string' || !updated)
 				return new ServerResponse(updated || 'failed to update user')

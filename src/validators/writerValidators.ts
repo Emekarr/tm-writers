@@ -64,8 +64,8 @@ export const validateCacheNewWriter = (data: Writer) =>
 			.valid('high school diploma', 'MSc', 'BSc', 'Masters', 'Doctorate')
 			.required(),
 		experience: Joi.number(),
-		academic_work: Joi.any(),
-		cv: Joi.any(),
+		academic_work: Joi.any().required(),
+		cv: Joi.any().required(),
 		strength: Joi.array().items(Joi.string()),
 		weakness: Joi.array().items(Joi.string()),
 		verified_email: Joi.boolean(),
@@ -89,7 +89,7 @@ export const validateUpdateWriter = (data: Writer) =>
 		),
 		country: Joi.string().country(),
 		mobile: Joi.string().phoneNumber(),
-		profile_image: Joi.string(),
+		profile_image: Joi.any(),
 		address: Joi.string().max(100).min(10),
 		nearest_landmark: Joi.string().max(50).min(2),
 		highest_qualification: Joi.string().valid(
