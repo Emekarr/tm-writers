@@ -71,7 +71,7 @@ const user_schema_field: Record<keyof IUser, any> = {
 		unique: true,
 	},
 	profile_image: {
-		type: String,
+		type: Buffer,
 		default: null,
 	},
 	verified_email: {

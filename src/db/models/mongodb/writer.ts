@@ -96,9 +96,7 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 		trim: true,
 	},
 	academic_work: {
-		type: Types.ObjectId,
-		// required: true,
-		ref: 'Upload',
+		type: Buffer,
 	},
 	nearest_landmark: {
 		type: String,
@@ -115,14 +113,10 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 		trim: true,
 	},
 	profile_image: {
-		type: Types.ObjectId,
-		default: null,
-		ref: 'Upload',
+		type: Buffer,
 	},
 	cv: {
-		type: Types.ObjectId,
-		// required: true,
-		ref: 'Upload',
+		type: Buffer,
 	},
 	verified_email: {
 		type: Boolean,

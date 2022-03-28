@@ -32,8 +32,8 @@ export const validateCreateNewWriter = (data: Writer) =>
 
 			.required(),
 		experience: Joi.number().required(),
-		academic_work: Joi.any(),
-		cv: Joi.any(),
+		academic_work: Joi.any().required(),
+		cv: Joi.any().required(),
 		strength: Joi.array().items(Joi.string()),
 		weakness: Joi.array().items(Joi.string()),
 		verified_email: Joi.boolean(),
