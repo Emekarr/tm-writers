@@ -3,9 +3,9 @@
 	"version": "1.0.0",
 	"main": "server.ts",
 	"scripts": {
-		"dev": "env-cmd -f ./config/dev.env nodemon ./src/server.ts",
+		"dev": "env-cmd -f ./config/dev.env nodemon ./src/workers/worker.ts",
 		"build": "rimraf ./build && tsc",
-		"start": "yarn run build && node build/server.js"
+		"start": "yarn run build && node build/workers/worker.js"
 	},
 	"repository": "https://github.com/Emekarr/tm-writers.git",
 	"author": "Chiemekam Anyawnwu-Ebere",
