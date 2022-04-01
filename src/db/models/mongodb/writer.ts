@@ -76,7 +76,7 @@ const writer_schema_fields: Record<keyof IWriter, any> = {
 	},
 	approved_writer: {
 		type: Boolean,
-		default: null,
+		default: false,
 	},
 	address: {
 		type: String,
