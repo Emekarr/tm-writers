@@ -99,11 +99,19 @@ export default abstract class OrderController {
 
 	static async getOrders(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { limit, page, state } = req.query;
-			const orders = await OrderRepository.findManyByFields(
-				{ createdBy: req.id, state },
-				{ limit: Number(limit), page: Number(page) },
-			);
+			const { limit, page, state, id } = req.query;
+			let orders;
+			if (req.account === 'admin') {
+				orders = await OrderRepository.findManyByFields(
+					{ createdBy: id, state },
+					{ limit: Number(limit), page: Number(page) },
+				);
+			} else {
+				orders = await OrderRepository.findManyByFields(
+					{ createdBy: req.id, state },
+					{ limit: Number(limit), page: Number(page) },
+				);
+			}
 			new ServerResponse('Order retrieved successfully')
 				.data(orders)
 				.respond(res);

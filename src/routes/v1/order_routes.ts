@@ -29,7 +29,7 @@ router.put(
 
 router.get(
 	'/user/all',
-	special_auth_middleware('user'),
+	special_auth_middleware('user', 'admin'),
 	OrderController.getOrders,
 );
 
