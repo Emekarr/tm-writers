@@ -1,9 +1,9 @@
 import request_repository from '../../repository/mongodb/request_repository';
-import { Request, RequestDocument } from '../../db/models/mongodb/request';
+import { RequestDocument } from '../../db/models/mongodb/request';
 import order_repository from '../../repository/mongodb/order_repository';
-import user from '../../db/models/mongodb/user';
 import { Types } from 'mongoose';
 import { IOrderDocument } from '../../db/models/mongodb/order';
+import OrderState from '../../utils/types/order_state';
 
 export default abstract class AcceptRequestUseCase {
 	private static request_repository = request_repository;
@@ -45,6 +45,7 @@ export default abstract class AcceptRequestUseCase {
 		}
 		request.accepted = new Types.ObjectId(data.user);
 		order.assignedTo = new Types.ObjectId(data.user);
+		order.state = OrderState.IN_PROGRESS;
 		await this.request_repository.saveData(request);
 		await this.order_repository.saveData(order);
 		return true;
