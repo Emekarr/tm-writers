@@ -2,7 +2,7 @@ import { Schema, Document, model, Types } from 'mongoose';
 
 export interface Request {
 	accepted: Types.ObjectId;
-	writers: { writer: Types.ObjectId; accepted: boolean; reason: string }[];
+	writers: { writer: Types.ObjectId; accepted: boolean; reason?: string }[];
 	order: Types.ObjectId;
 }
 
