@@ -34,6 +34,20 @@ router.get(
 );
 
 router.put(
+	'/admin/approve',
+	auth_middleware,
+	special_auth_middleware('admin'),
+	WriterController.approveWriter,
+);
+
+router.get(
+	'/admin/reject',
+	auth_middleware,
+	special_auth_middleware('admin'),
+	WriterController.rejectWriter,
+);
+
+router.put(
 	'/account/update-password',
 	auth_middleware,
 	special_auth_middleware('writer'),

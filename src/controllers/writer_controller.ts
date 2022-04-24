@@ -14,6 +14,8 @@ import CreateAuthTokenUseCase from '../usecases/authentication/CreateAuthTokensU
 import LoginWriterUseCase from '../usecases/writers/LoginWriterUseCase';
 import VerifyOtpUseCase from '../usecases/otp/VerifyOtpUseCase';
 import UpdateWriterPasswordUseCase from '../usecases/writers/UpdateWriterPasswordUseCase';
+import ApproveWriterUseCase from '../usecases/writers/ApproveWriterUseCase';
+import RejectWriterUseCase from '../usecases/writers/RejectWriterUseCase';
 
 // messaging
 import EmailMesssenger from '../messaging/email_messenger';
@@ -220,7 +222,35 @@ export default abstract class WriterController {
 
 	static async approveWriter(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { id } = req.query;
+			const { writerId } = req.query;
+			const response = await ApproveWriterUseCase.execute(writerId as string);
+			if (typeof response === 'string') {
+				return new ServerResponse(
+					response || 'something went wrong while approving writer',
+				)
+					.success(false)
+					.statusCode(200)
+					.respond(res);
+			}
+			new ServerResponse('writer approved successfully').respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async rejectWriter(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { writerId } = req.query;
+			const response = await RejectWriterUseCase.execute(writerId as string);
+			if (typeof response === 'string') {
+				return new ServerResponse(
+					response || 'something went wrong while approving writer',
+				)
+					.success(false)
+					.statusCode(200)
+					.respond(res);
+			}
+			new ServerResponse('writer rejected successfully').respond(res);
 		} catch (err) {
 			next(err);
 		}
