@@ -216,4 +216,13 @@ export default abstract class WriterController {
 			next(err);
 		}
 	}
+
+	static async approveWriter(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { id } = req.query;
+			
+		} catch (err) {
+			next(err);
+		}
+	}
 }

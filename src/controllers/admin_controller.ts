@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import LoginAdminUseCase from '../usecases/admin/LoginAdminUseCase';
 import CreateAuthTokenUseCase from '../usecases/authentication/CreateAuthTokensUseCase';
+import CreateNewAdminUseCase from '../usecases/admin/CreateNewAdminUseCase';
 
 // utils
 import validate_body from '../utils/validate_body';
@@ -48,4 +49,27 @@ export default abstract class AdminController {
 			next(err);
 		}
 	}
+
+	static createNewAdmin = async (
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	) => {
+		try {
+			const adminData = req.body;
+			const admin = await CreateNewAdminUseCase.execute(adminData);
+			if (typeof admin === 'string' || !admin) {
+				return new ServerResponse(
+					admin || 'something went wrong while creating a new admin',
+				)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			}
+
+			new ServerResponse('Admin created successfully').data(admin).respond(res);
+		} catch (err) {
+			next(err);
+		}
+	};
 }
