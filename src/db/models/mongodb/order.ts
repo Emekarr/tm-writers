@@ -15,7 +15,7 @@ export interface Order {
 
 export interface IOrder extends Order {
 	state: string;
-	assignedTo: string;
+	assignedTo: Types.ObjectId;
 }
 
 export interface IOrderDocument extends IOrder, Document {}

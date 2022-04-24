@@ -2,7 +2,7 @@ import { Schema, Document, model, Types } from 'mongoose';
 
 export interface Request {
 	accepted: Types.ObjectId;
-	writers: Types.ObjectId[];
+	writers: { writer: Types.ObjectId; accepted: boolean }[];
 	order: Types.ObjectId;
 }
 
@@ -15,9 +15,12 @@ const requestSchemaFields: Record<keyof Request, any> = {
 	},
 	writers: [
 		{
-			type: Types.ObjectId,
-			ref: 'Writer',
-			required: true,
+			writer: {
+				type: Types.ObjectId,
+				ref: 'Writer',
+				required: true,
+			},
+			accepted: Boolean,
 		},
 	],
 	order: {
