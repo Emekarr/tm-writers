@@ -16,6 +16,7 @@ import VerifyOtpUseCase from '../usecases/otp/VerifyOtpUseCase';
 import UpdateWriterPasswordUseCase from '../usecases/writers/UpdateWriterPasswordUseCase';
 import ApproveWriterUseCase from '../usecases/writers/ApproveWriterUseCase';
 import RejectWriterUseCase from '../usecases/writers/RejectWriterUseCase';
+import UpdateWriterUseCase from '../usecases/writers/UpdateWriterUseCase';
 
 // messaging
 import EmailMesssenger from '../messaging/email_messenger';
@@ -285,6 +286,27 @@ export default abstract class WriterController {
 					.statusCode(400)
 					.respond(res);
 			new ServerResponse('Password Updated successfully').respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async updateWriter(req: Request, res: Response, next: NextFunction) {
+		try {
+			const data = req.body;
+			if (Object.keys(data).length === 0 && !req.file)
+				return new ServerResponse('Please provide data to be updated')
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			data.profile_image = req.file?.buffer;
+			const updated = await UpdateWriterUseCase.execute(data, req.id);
+			if (typeof updated === 'string' || !updated)
+				return new ServerResponse(updated || 'failed to update writer')
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			new ServerResponse('writer updated').respond(res);
 		} catch (err) {
 			next(err);
 		}

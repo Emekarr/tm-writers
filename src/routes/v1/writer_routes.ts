@@ -54,4 +54,12 @@ router.put(
 	WriterController.updateWriterPassword,
 );
 
+router.put(
+	'/profile/update',
+	auth_middleware,
+	special_auth_middleware('writer'),
+	FormDataParser.uploadOne('profile-image'),
+	WriterController.updateWriter,
+);
+
 export default router;
