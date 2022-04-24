@@ -23,4 +23,12 @@ router.post(
 	RequestController.rejectRequest,
 );
 
+router.get('/all-requests', RequestController.getWriterRequests);
+
+router.get(
+	'/all-requests-admin',
+	special_auth_middleware('admin'),
+	RequestController.getWriterRequestsAdmin,
+);
+
 export default router;

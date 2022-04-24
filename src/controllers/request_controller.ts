@@ -9,6 +9,8 @@ import CreateRequestUseCase from '../usecases/request/CreateRequestUseCase';
 import RejectRequestUseCase from '../usecases/request/RejectRequestUseCase';
 import AcceptRequestUseCase from '../usecases/request/AcceptRequestUseCase';
 
+import request_repository from '../repository/mongodb/request_repository';
+
 export default abstract class RequestController {
 	static async createRequest(req: Request, res: Response, next: NextFunction) {
 		try {
@@ -78,6 +80,47 @@ export default abstract class RequestController {
 					.respond(res);
 			}
 			new ServerResponse('Request accepted successfully').respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async getWriterRequests(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	) {
+		try {
+			const { limit, page, accepted } = req.query;
+			const requests = await request_repository.findManyByFields(
+				{ writers: { writer: req.id, accepted } },
+				{
+					limit: Number(limit),
+					page: Number(page),
+				},
+			);
+			new ServerResponse('Requests fetched succesfully')
+				.data(requests)
+				.respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async getWriterRequestsAdmin(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	) {
+		try {
+			const { limit, page } = req.query;
+			const requests = await request_repository.findAll({
+				limit: Number(limit),
+				page: Number(page),
+			});
+			new ServerResponse('Requests fetched succesfully')
+				.data(requests)
+				.respond(res);
 		} catch (err) {
 			next(err);
 		}
