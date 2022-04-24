@@ -13,6 +13,7 @@ import CreateNewWriterUseCase from '../usecases/writers/CreateNewWriterUseCase';
 import CreateAuthTokenUseCase from '../usecases/authentication/CreateAuthTokensUseCase';
 import LoginWriterUseCase from '../usecases/writers/LoginWriterUseCase';
 import VerifyOtpUseCase from '../usecases/otp/VerifyOtpUseCase';
+import UpdateWriterPasswordUseCase from '../usecases/writers/UpdateWriterPasswordUseCase';
 
 // messaging
 import EmailMesssenger from '../messaging/email_messenger';
@@ -220,7 +221,40 @@ export default abstract class WriterController {
 	static async approveWriter(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { id } = req.query;
-			
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async updateWriterPassword(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	) {
+		try {
+			const passwordInfo = req.body;
+			const invalid = validate_body([
+				passwordInfo.new_password,
+				passwordInfo.old_password,
+			]);
+			if (invalid)
+				return new ServerResponse(invalid)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			const user = await UpdateWriterPasswordUseCase.execute({
+				id: req.id,
+				password: passwordInfo.old_password,
+				new_password: passwordInfo.new_password,
+			});
+			if (typeof user === 'string' || !user)
+				return new ServerResponse(
+					user || 'Something went wrong while trying to update password',
+				)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			new ServerResponse('Password Updated successfully').respond(res);
 		} catch (err) {
 			next(err);
 		}

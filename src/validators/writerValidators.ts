@@ -71,7 +71,7 @@ export const validateCacheNewWriter = (data: Writer) =>
 		verified_email: Joi.boolean(),
 	}).validate(data) as ValidationResult;
 
-export const validateUpdateWriter = (data: Writer) =>
+export const validateUpdateWriter = (data: Partial<Writer>) =>
 	Joi.object({
 		firstname: Joi.string().max(30).min(2),
 		lastname: Joi.string().max(30).min(2),

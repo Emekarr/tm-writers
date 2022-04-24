@@ -33,4 +33,11 @@ router.get(
 	WriterController.getWriters,
 );
 
+router.put(
+	'/account/update-password',
+	auth_middleware,
+	special_auth_middleware('writer'),
+	WriterController.updateWriterPassword,
+);
+
 export default router;
