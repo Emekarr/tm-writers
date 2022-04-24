@@ -39,11 +39,12 @@ export default abstract class RequestController {
 
 	static async rejectRequest(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { requestId, orderId } = req.body;
+			const { requestId, orderId, reason } = req.body;
 			const user = req.id;
 			const response = await RejectRequestUseCase.execute({
 				orderId,
 				requestId,
+				reason,
 				user,
 			});
 			if (typeof response === 'string' || !response) {
@@ -93,7 +94,10 @@ export default abstract class RequestController {
 		try {
 			const { limit, page, accepted } = req.query;
 			const requests = await request_repository.findManyByFields(
-				{ writers: { writer: req.id, accepted } },
+				{
+					'writers.writer': req.id,
+					'writer.accepted': accepted,
+				},
 				{
 					limit: Number(limit),
 					page: Number(page),

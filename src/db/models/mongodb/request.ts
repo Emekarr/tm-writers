@@ -2,7 +2,7 @@ import { Schema, Document, model, Types } from 'mongoose';
 
 export interface Request {
 	accepted: Types.ObjectId;
-	writers: { writer: Types.ObjectId; accepted: boolean }[];
+	writers: { writer: Types.ObjectId; accepted: boolean; reason: string }[];
 	order: Types.ObjectId;
 }
 
@@ -21,6 +21,9 @@ const requestSchemaFields: Record<keyof Request, any> = {
 				required: true,
 			},
 			accepted: Boolean,
+			reason: {
+				type: String,
+			},
 		},
 	],
 	order: {

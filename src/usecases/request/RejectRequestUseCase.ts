@@ -13,6 +13,7 @@ export default abstract class RejectRequestUseCase {
 	static async execute(data: {
 		orderId: string;
 		requestId: string;
+		reason: string;
 		user: string;
 	}) {
 		const order = (await this.order_repository.findById(
@@ -39,6 +40,7 @@ export default abstract class RejectRequestUseCase {
 				request.writers[i] = {
 					writer: writer.writer,
 					accepted: false,
+					reason: data.reason,
 				};
 				break;
 			}
