@@ -12,4 +12,10 @@ router.post(
 	ProjectController.createProject,
 );
 
+router.put(
+	'/update',
+	special_auth_middleware('writer'),
+	ProjectController.updateProject,
+);
+
 export default router;
