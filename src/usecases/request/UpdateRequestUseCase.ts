@@ -10,6 +10,7 @@ export default abstract class UpdateRequestUseCase {
 			id,
 		)) as RequestDocument;
 		if (!request) return `request does not exist`;
+		if (request.accepted) return 'request already accepted';
 		request.writers = data.map((writer) => {
 			return {
 				writer: new Types.ObjectId(writer),
