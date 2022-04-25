@@ -129,4 +129,21 @@ export default abstract class RequestController {
 			next(err);
 		}
 	}
+
+	static async getOneRequest(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { id } = req.query;
+			const request = await request_repository.findById(id as string);
+			if (!request)
+				return new ServerResponse('Request does not exist')
+					.statusCode(404)
+					.success(false)
+					.respond(res);
+			new ServerResponse('Request retrieved successfully')
+				.data(request)
+				.respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
 }

@@ -31,4 +31,10 @@ router.get(
 	RequestController.getWriterRequestsAdmin,
 );
 
+router.get(
+	'/get-request',
+	special_auth_middleware('admin', 'writer'),
+	RequestController.getOneRequest,
+);
+
 export default router;
