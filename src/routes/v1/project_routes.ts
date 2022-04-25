@@ -18,4 +18,10 @@ router.put(
 	ProjectController.updateProject,
 );
 
+router.get(
+	'/all',
+	special_auth_middleware('writer', 'admin'),
+	ProjectController.fetchProjects,
+);
+
 export default router;

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import project_repository from '../repository/mongodb/project_repository';
 
 // usecases
 import CreateNewProjectUseCase from '../usecases/project/CreateNewProjectUseCase';
@@ -38,6 +39,23 @@ export default class ProjectController {
 					.success(false)
 					.respond(res);
 			new ServerResponse('Project updated successfully').respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async fetchProjects(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { page, limit } = req.query;
+			const projects = await project_repository.findManyByFields(
+				{
+					writer: req.id,
+				},
+				{ limit: Number(limit), page: Number(page) },
+			);
+			new ServerResponse('Projects retrieved successfully')
+				.data(projects)
+				.respond(res);
 		} catch (err) {
 			next(err);
 		}
