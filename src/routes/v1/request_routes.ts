@@ -23,6 +23,12 @@ router.post(
 	RequestController.rejectRequest,
 );
 
+router.put(
+	'/update',
+	special_auth_middleware('admin'),
+	RequestController.updateWritersInRequest,
+);
+
 router.get('/all-requests', RequestController.getWriterRequests);
 
 router.get(

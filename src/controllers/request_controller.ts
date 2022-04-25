@@ -10,6 +10,7 @@ import RejectRequestUseCase from '../usecases/request/RejectRequestUseCase';
 import AcceptRequestUseCase from '../usecases/request/AcceptRequestUseCase';
 
 import request_repository from '../repository/mongodb/request_repository';
+import UpdateRequestUseCase from '../usecases/request/UpdateRequestUseCase';
 
 export default abstract class RequestController {
 	static async createRequest(req: Request, res: Response, next: NextFunction) {
@@ -81,6 +82,28 @@ export default abstract class RequestController {
 					.respond(res);
 			}
 			new ServerResponse('Request accepted successfully').respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async updateWritersInRequest(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	) {
+		try {
+			const writers = req.body;
+			const { id } = req.query;
+			const result = await UpdateRequestUseCase.execute(writers, id as string);
+			if (typeof result === 'string' || !result)
+				return new ServerResponse(
+					result || 'something went wrong while updating writers',
+				)
+					.success(false)
+					.statusCode(400)
+					.respond(res);
+			new ServerResponse('Writers updated').respond(res);
 		} catch (err) {
 			next(err);
 		}
