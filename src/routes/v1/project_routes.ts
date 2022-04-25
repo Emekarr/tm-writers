@@ -24,4 +24,6 @@ router.get(
 	ProjectController.fetchProjects,
 );
 
+router.get('/get-project', ProjectController.getOneProject);
+
 export default router;

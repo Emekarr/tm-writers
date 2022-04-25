@@ -60,4 +60,21 @@ export default class ProjectController {
 			next(err);
 		}
 	}
+
+	static async getOneProject(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { id } = req.query;
+			const project = await project_repository.findById(id as string);
+			if (!project)
+				return new ServerResponse('Project does not exist')
+					.statusCode(404)
+					.success(false)
+					.respond(res);
+			new ServerResponse('project retrieved successfully')
+				.data(project)
+				.respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
 }
