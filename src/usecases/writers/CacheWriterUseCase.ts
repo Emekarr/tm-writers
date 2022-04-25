@@ -14,6 +14,7 @@ export default abstract class CacheWriterUseCase {
 	private static writer_repository = writer_repository;
 
 	static async execute(data: Writer) {
+		console.log(data);
 		const writer = this.validateCacheNewWriter(data);
 		if (writer.error) return `invalid data provided : ${writer.error}`;
 		const existing_user = await this.user_repository.findOneByFields({

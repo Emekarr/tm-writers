@@ -35,6 +35,8 @@ export default abstract class WriterController {
 					writer[file.originalname.split('.', 1)] = file.buffer;
 				}
 			}
+			writer.strength = JSON.parse(writer.strength);
+			writer.weakness = JSON.parse(writer.weakness);
 			const created_writer = await CacheWriterUseCase.execute(writer);
 			if (typeof created_writer === 'string')
 				return new ServerResponse(created_writer)
