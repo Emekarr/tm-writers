@@ -51,4 +51,6 @@ router.put(
 	OrderController.assignOrder,
 );
 
+router.get('/getOrder', OrderController.getOneOrder);
+
 export default router;

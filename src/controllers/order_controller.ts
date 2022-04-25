@@ -21,6 +21,7 @@ import { IUserDocument } from '../db/models/mongodb/user';
 
 // user repository
 import user_repository from '../repository/mongodb/user_repository';
+import order_repository from '../repository/mongodb/order_repository';
 
 export default abstract class OrderController {
 	static async createOrder(req: Request, res: Response, next: NextFunction) {
@@ -186,6 +187,23 @@ export default abstract class OrderController {
 					.success(false)
 					.respond(res);
 			new ServerResponse('Order successfully assigned').respond(res);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async getOneOrder(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { id } = req.query;
+			const order = await order_repository.findById(id as string);
+			if (!order)
+				return new ServerResponse('Order does not exist')
+					.success(false)
+					.statusCode(404)
+					.respond(res);
+			new ServerResponse('Order successfully retrieved')
+				.data(order)
+				.respond(res);
 		} catch (err) {
 			next(err);
 		}
