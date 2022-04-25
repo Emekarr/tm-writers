@@ -38,13 +38,15 @@ export default abstract class AdminController {
 					.success(false)
 					.statusCode(400)
 					.respond(res);
-			res.cookie('ACCESS_TOKEN', tokens.newAccessToken.token, {
-				maxAge: parseInt(process.env.ACCESS_TOKEN_LIFE as string, 10),
-			});
-			res.cookie('REFRESH_TOKEN', tokens.newRefreshToken.token, {
-				maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
-			});
-			new ServerResponse('Login successful').data(admin).respond(res);
+			// res.cookie('ACCESS_TOKEN', tokens.newAccessToken.token, {
+			// 	maxAge: parseInt(process.env.ACCESS_TOKEN_LIFE as string, 10),
+			// });
+			// res.cookie('REFRESH_TOKEN', tokens.newRefreshToken.token, {
+			// 	maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
+			// });
+			new ServerResponse('Login successful')
+				.data({ admin, tokens })
+				.respond(res);
 		} catch (err) {
 			next(err);
 		}
