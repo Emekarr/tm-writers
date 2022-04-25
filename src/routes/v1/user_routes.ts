@@ -21,7 +21,7 @@ router.put(
 	'/profile/update',
 	auth_middleware,
 	special_auth_middleware('user'),
-	FormDataParser.uploadOne('profile-image'),
+	FormDataParser.uploadOne('profile_image'),
 	UserController.updateUser,
 );
 
