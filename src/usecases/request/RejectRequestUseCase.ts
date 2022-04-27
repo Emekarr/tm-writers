@@ -15,14 +15,14 @@ export default abstract class RejectRequestUseCase {
 		reason: string;
 		user: string;
 	}) {
-		const order = (await this.order_repository.findById(
-			data.orderId,
-		)) as IOrderDocument;
-		if (!order) return `order does not exist`;
 		const request = (await this.request_repository.findById(
 			data.requestId,
 		)) as RequestDocument;
 		if (!request) return `request does not exist`;
+		const order = (await this.order_repository.findById(
+			request.order.toString(),
+		)) as IOrderDocument;
+		if (!order) return `order does not exist`;
 		const exists = request.writers.filter((writer) => {
 			writer.writer.toString() === data.user;
 		});
