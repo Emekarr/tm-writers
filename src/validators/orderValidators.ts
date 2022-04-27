@@ -7,7 +7,7 @@ export const validateCreateNewOrder = (data: Order) =>
 		message: Joi.string().max(2000).min(2).required(),
 		timeline: Joi.string().required(),
 		name: Joi.string().required(),
-		// attachment: Joi.string(),
+		attachment: Joi.any(),
 		createdBy: Joi.string().required(),
 		uniqueId: Joi.string().required(),
 	}).validate(data);
