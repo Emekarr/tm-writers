@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "env-cmd -f ./config/dev.env nodemon ./src/workers/worker.ts",
 		"build": "rimraf ./build && tsc",
-		"start": "yarn run build && node build/workers/worker.js"
+		"start": "node build/workers/worker.js"
 	},
 	"engines": {
 		"node": "16.x"
