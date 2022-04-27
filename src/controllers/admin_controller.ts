@@ -45,7 +45,11 @@ export default abstract class AdminController {
 			// 	maxAge: parseInt(process.env.REFRESH_TOKEN_LIFE as string, 10),
 			// });
 			new ServerResponse('Login successful')
-				.data({ admin, tokens })
+				.data({
+					admin,
+					ACCESS_TOKEN: tokens.newAccessToken.token,
+					REFRESH_TOKEKN: tokens.newRefreshToken.token,
+				})
 				.respond(res);
 		} catch (err) {
 			next(err);
