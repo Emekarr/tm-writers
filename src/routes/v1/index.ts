@@ -17,11 +17,15 @@ import request_route from './request_routes';
 
 import comment_route from './comment_routes';
 
+import project_routes from './project_routes';
+
 const router = Router();
 
 router.use('/user', user_routes);
 
 router.use('/writer', writer_routes);
+
+router.use('/project', auth_middleware, project_routes)
 
 router.use('/order', auth_middleware, order_routes);
 

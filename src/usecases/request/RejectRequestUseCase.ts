@@ -11,7 +11,6 @@ export default abstract class RejectRequestUseCase {
 	private static order_repository = order_repository;
 
 	static async execute(data: {
-		orderId: string;
 		requestId: string;
 		reason: string;
 		user: string;

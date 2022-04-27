@@ -40,10 +40,9 @@ export default abstract class RequestController {
 
 	static async rejectRequest(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { requestId, orderId, reason } = req.body;
+			const { requestId, reason } = req.body;
 			const user = req.id;
 			const response = await RejectRequestUseCase.execute({
-				orderId,
 				requestId,
 				reason,
 				user,
@@ -65,11 +64,10 @@ export default abstract class RequestController {
 
 	static async acceptRequest(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { requestId, orderId } = req.body;
+			const { requestId } = req.query;
 			const user = req.id;
 			const response = await AcceptRequestUseCase.execute({
-				orderId,
-				requestId,
+				requestId: requestId as string,
 				user,
 			});
 			if (typeof response === 'string' || !response) {

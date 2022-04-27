@@ -11,13 +11,13 @@ router.post(
 	RequestController.createRequest,
 );
 
-router.post(
+router.put(
 	'/accept',
 	special_auth_middleware('writer'),
 	RequestController.acceptRequest,
 );
 
-router.post(
+router.put(
 	'/reject',
 	special_auth_middleware('writer'),
 	RequestController.rejectRequest,
