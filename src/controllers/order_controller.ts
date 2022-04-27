@@ -27,13 +27,14 @@ export default abstract class OrderController {
 	static async createOrder(req: Request, res: Response, next: NextFunction) {
 		try {
 			const orderData = req.body;
-			if (req.file) {
-				orderData.attachment = await MediaService.uploadDataStream(
-					req.file.buffer,
-					'order-attachments',
-					req.file.originalname,
-				);
-			}
+			orderData.attachment = req.file?.buffer;
+			// if (req.file) {
+			// 	orderData.attachment = await MediaService.uploadDataStream(
+			// 		req.file.buffer,
+			// 		'order-attachments',
+			// 		req.file.originalname,
+			// 	);
+			// }
 			orderData.createdBy = req.id;
 			const order = await CreateNewOrderUseCase.execute(orderData);
 			if (req.account === 'user') {

@@ -5,11 +5,10 @@ export interface Order {
 	services: string[];
 	message: string;
 	timeline: string;
-	number: number;
 	name: string;
 	createdBy: string;
 	uniqueId: string;
-	attachment: string;
+	attachment: Buffer;
 	orderNumber: number;
 }
 
@@ -27,16 +26,8 @@ const orderSchemaFields: Record<keyof IOrder, any> = {
 		ref: 'User',
 	},
 	attachment: {
-		type: Types.ObjectId,
-		ref: 'Upload',
-	},
-	number: {
-		type: Number,
-		required: true,
-		max: 99,
-		min: 1,
-		trim: true,
-		default: 1,
+		type: Buffer,
+		default: null,
 	},
 	assignedTo: {
 		type: Types.ObjectId,
