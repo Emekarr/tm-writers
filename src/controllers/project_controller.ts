@@ -46,10 +46,11 @@ export default class ProjectController {
 
 	static async fetchProjects(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { page, limit } = req.query;
+			const { page, limit, finished } = req.query;
 			const projects = await project_repository.findManyByFields(
 				{
 					writer: req.id,
+					finished,
 				},
 				{ limit: Number(limit), page: Number(page) },
 			);
