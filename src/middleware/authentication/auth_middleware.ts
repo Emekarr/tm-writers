@@ -115,7 +115,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 		let cacheAccessToken!: AccessToken;
 
 		if (!accessTokensFromCache || accessTokensFromCache.length === 0) {
-			return new ServerResponse('Invalid token used')
+			return new ServerResponse('Invalid token used. no tokens available')
 				.statusCode(400)
 				.respond(res);
 		} else {
@@ -124,7 +124,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 					(JSON.parse(token) as AccessToken).token === accessTokenHeader,
 			);
 			if (!exists) {
-				return new ServerResponse('Invalid token used')
+				return new ServerResponse('Invalid token used. token missing')
 					.statusCode(400)
 					.respond(res);
 			}
