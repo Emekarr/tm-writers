@@ -131,16 +131,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 			cacheAccessToken = JSON.parse(exists);
 		}
 
-		if (req.socket.remoteAddress! !== cacheAccessToken.ipAddress) {
-			await redis_repository.deleteFromSet(
-				`${(accessDecoded as JwtPayload).id}-access-tokens`,
-				[JSON.stringify(cacheAccessToken)],
-			);
-			return new ServerResponse('token used from unrecognised device.')
-				.statusCode(400)
-				.success(false)
-				.respond(res);
-		}
 		req.id = (accessDecoded as JwtPayload).id;
 		req.account = (accessDecoded as JwtPayload).account;
 		next();
