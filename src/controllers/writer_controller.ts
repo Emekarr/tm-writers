@@ -53,7 +53,7 @@ export default abstract class WriterController {
 					.statusCode(400)
 					.success(false)
 					.respond(res);
-			if (process.env.NODE_ENV === 'PROD') {
+			if (process.env.NODE_ENV === 'production') {
 				await EmailMesssenger.send(
 					writer.email,
 					`This email is being used to create an account on TDM Writers\n ${code} is your otp`,
