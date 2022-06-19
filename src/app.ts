@@ -1,5 +1,5 @@
 import express, { Application, Response, Request } from 'express';
-import os from 'os'
+import os from 'os';
 import cors from 'cors';
 
 import cookie_parser from 'cookie-parser';
@@ -24,7 +24,7 @@ class App {
 
 		this.express.use(
 			cors({
-				origin: ['http://localhost:3000', 'https://tdm-writers.netlify.app'],
+				origin: ['http://localhost:3000', process.env.CLIENT_URL as string],
 				credentials: true,
 			}),
 		);
