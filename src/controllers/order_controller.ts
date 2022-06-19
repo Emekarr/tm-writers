@@ -36,7 +36,7 @@ export default abstract class OrderController {
 			// 	);
 			// }
 			orderData.createdBy = req.id;
-			orderData.services = JSON.parse(orderData.services);
+			// orderData.services = JSON.parse(orderData.services);
 			const order = await CreateNewOrderUseCase.execute(orderData);
 			if (req.account === 'user') {
 				const user = (await user_repository.findById(req.id)) as IUserDocument;
