@@ -1,6 +1,6 @@
 import project_repository from '../../repository/mongodb/project_repository';
 import order_repository from '../../repository/mongodb/order_repository';
-import { validateUpdateNewProject } from '../../validators/project_validators';
+import { validateCreateNewProject } from '../../validators/project_validators';
 import { Project } from '../../db/models/mongodb/project';
 import { IOrderDocument } from '../../db/models/mongodb/order';
 import OrderState from '../../utils/types/order_state';
@@ -10,10 +10,10 @@ export default abstract class CreateNewProjectUseCase {
 
 	private static order_repository = order_repository;
 
-	private static validateUpdateNewProject = validateUpdateNewProject;
+	private static validateCreateNewProject = validateCreateNewProject;
 
 	static async execute(data: Project) {
-		const validated = this.validateUpdateNewProject(data);
+		const validated = this.validateCreateNewProject(data);
 		if (validated.error)
 			return `an error occured while creating your project : ${validated.error.message}`;
 		const order = (await this.order_repository.findById(
