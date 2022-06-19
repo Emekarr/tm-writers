@@ -12,6 +12,7 @@ export default class ProjectController {
 	static async createProject(req: Request, res: Response, next: NextFunction) {
 		try {
 			const projectData = req.body;
+			projectData.writer = req.id;
 			const result = await CreateNewProjectUseCase.execute(projectData);
 			if (typeof result === 'string' || !result)
 				return new ServerResponse(
