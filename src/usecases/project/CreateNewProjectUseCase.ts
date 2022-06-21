@@ -19,7 +19,7 @@ export default abstract class CreateNewProjectUseCase {
 		const order = (await this.order_repository.findById(
 			data.order,
 		)) as IOrderDocument;
-		if (order.assignedTo.toString() !== data.writer)
+		if (order.assignedTo?.toString() !== data.writer)
 			return `You are not assigned to this order`;
 		order.state = OrderState.IN_PROGRESS;
 		await this.order_repository.saveData(order);
